@@ -59,6 +59,7 @@ NeoBundle 'https://github.com/Lokaltog/vim-powerline.git'
 NeoBundle 'https://github.com/mattn/learn-vimscript.git'
 NeoBundle 'https://github.com/nathanaelkane/vim-indent-guides.git'
 "NeoBundle 'https://github.com/Rip-Rip/clang_complete.git'
+NeoBundle 'https://github.com/Shougo/git-vim.git'
 NeoBundle 'https://github.com/Shougo/neobundle.vim.git'
 NeoBundle 'https://github.com/Shougo/neocomplcache.git'
 NeoBundle 'https://github.com/Shougo/neocomplcache-clang.git'
@@ -936,6 +937,11 @@ let g:quickrun_config["cpp"] = {
 \    "outputter" : "my_outputter"
 \}
 
+"}}}
+
+" vim-ref "{{{
+let g:ref_cache_dir = expand('$MY_VIM_TMPDIR/.ref_cache_dir')
+let g:ref_use_vimproc = 1
 "}}}
 
 " vim-smartchr "{{{
