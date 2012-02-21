@@ -69,6 +69,7 @@ NeoBundle 'https://github.com/Shougo/unite.vim.git'
 NeoBundle 'https://github.com/Shougo/vimfiler.git'
 NeoBundle 'https://github.com/Shougo/vimproc.git'
 NeoBundle 'https://github.com/Shougo/vimshell.git'
+NeoBundle 'https://github.com/Shougo/vinarise.git'
 NeoBundle 'https://github.com/thinca/vim-fontzoom.git'
 NeoBundle 'https://github.com/thinca/vim-quickrun.git'
 NeoBundle 'https://github.com/thinca/vim-ref.git'
@@ -820,8 +821,6 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_data_directory = expand('$MY_VIM_TMPDIR/.vimfiler')
 " セーフモード設定
 let g:vimfiler_safe_mode_by_default = 0
-" 編集モードアクションをタブページで
-let g:vimfiler_edit_action = 'tabopen'
 " 自動cdを有効
 let g:vimfiler_enable_auto_cd = 1
 if s:iswin
