@@ -59,7 +59,7 @@ NeoBundle 'https://github.com/Lokaltog/vim-powerline.git'
 NeoBundle 'https://github.com/mattn/learn-vimscript.git'
 NeoBundle 'https://github.com/nathanaelkane/vim-indent-guides.git'
 "NeoBundle 'https://github.com/Rip-Rip/clang_complete.git'
-NeoBundle 'https://github.com/Shougo/git-vim.git'
+"NeoBundle 'https://github.com/Shougo/git-vim.git'
 NeoBundle 'https://github.com/Shougo/neobundle.vim.git'
 NeoBundle 'https://github.com/Shougo/neocomplcache.git'
 NeoBundle 'https://github.com/Shougo/neocomplcache-clang.git'
@@ -75,6 +75,7 @@ NeoBundle 'https://github.com/thinca/vim-quickrun.git'
 NeoBundle 'https://github.com/thinca/vim-ref.git'
 NeoBundle 'https://github.com/thinca/vim-unite-history.git'
 NeoBundle 'https://github.com/thinca/vim-visualstar.git'
+NeoBundle 'https://github.com/tpope/vim-fugitive.git'
 NeoBundle 'https://github.com/tpope/vim-surround.git'
 NeoBundle 'https://github.com/tyru/caw.vim.git'
 NeoBundle 'https://github.com/tyru/restart.vim.git'
@@ -589,10 +590,10 @@ nnoremap <silent> <Space>qt :<C-u>call <SID>toggle_quickfix_window()<CR>
 "
 
 " caw "{{{
-nmap <Leader>gc  <Plug>(caw:prefix)
-vmap <Leader>gc  <Plug>(caw:prefix)
-nmap <Leader>gcc <Plug>(caw:I:toggle)
-vmap <Leader>gcc <Plug>(caw:I:toggle)
+nmap <Leader>c  <Plug>(caw:prefix)
+vmap <Leader>c  <Plug>(caw:prefix)
+nmap <Leader>cc <Plug>(caw:I:toggle)
+vmap <Leader>cc <Plug>(caw:I:toggle)
 "}}}
 
 " clang-complete "{{{
@@ -821,8 +822,6 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_data_directory = expand('$MY_VIM_TMPDIR/.vimfiler')
 " セーフモード設定
 let g:vimfiler_safe_mode_by_default = 0
-" 編集モードアクションをタブページで
-let g:vimfiler_edit_action = 'tabopen'
 " 自動cdを有効
 let g:vimfiler_enable_auto_cd = 1
 if s:iswin
@@ -957,6 +956,16 @@ function! EnableSmartchrBasic()
 endfunction
 MyAutocmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
 MyAutocmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
+"}}}
+
+" vim-fugitive "{{{
+nnoremap <Leader>gd :<C-u>Gdiff<Enter>
+nnoremap <Leader>gs :<C-u>Gstatus<Enter>
+nnoremap <Leader>gl :<C-u>Glog<Enter>
+nnoremap <Leader>ga :<C-u>Gwrite<Enter>
+nnoremap <Leader>gc :<C-u>Gcommit<Enter>
+nnoremap <Leader>gC :<C-u>Git commit --amend<Enter>
+nnoremap <Leader>gb :<C-u>Gblame<Enter>
 "}}}
 
 " vim-surround "{{{
