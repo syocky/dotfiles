@@ -14,14 +14,17 @@ endif
 
 
 " 自動コマンド初期化
-augroup vimrc
+" augroup vimrc
+"   autocmd!
+" augroup END
+" 
+" command!
+" \ -bang -nargs=*
+" \ MyAutoCmd
+" \ autocmd<bang> vimrc <args>
+augroup MyAutoCmd
   autocmd!
 augroup END
-
-command!
-\ -bang -nargs=*
-\ MyAutocmd
-\ autocmd<bang> vimrc <args>
 
 " ユーザランタイムパス設定
 if s:iswin
@@ -231,7 +234,7 @@ set hlsearch
 "set grepprg=internal
 set grepprg=grep\ -nH
 " vimgrepでの検索後、QuickFixウィンドウを開く
-MyAutocmd QuickfixCmdPost vimgrep cw
+autocmd MyAutoCmd QuickfixCmdPost vimgrep cw
 
 "}}}
 
@@ -299,13 +302,13 @@ set completeopt=menuone
 " 他のバッファから補完をしない
 set complete=.
 " 自動折り返しを無効化
-MyAutocmd FileType * set textwidth=0
+autocmd MyAutoCmd FileType * set textwidth=0
 " 編集中の行に下線を引く
-MyAutocmd InsertLeave * setlocal nocursorline
-MyAutocmd InsertEnter * setlocal cursorline
-"MyAutocmd InsertLeave * highlight CursorLine ctermfg=145 guifg=#c2bfa5 guibg=#000000
-"MyAutocmd InsertEnter * highlight CursorLine cterm=underline ctermfg=2 ctermbg=NONE gui=underline guifg=#1E90FF guibg=NONE
-MyAutocmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
+autocmd MyAutoCmd InsertLeave * setlocal nocursorline
+autocmd MyAutoCmd InsertEnter * setlocal cursorline
+"autocmd MyAutoCmd InsertLeave * highlight CursorLine ctermfg=145 guifg=#c2bfa5 guibg=#000000
+"autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=2 ctermbg=NONE gui=underline guifg=#1E90FF guibg=NONE
+autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
 "set cursorline
 "highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
 " ハイライトを有効にする
@@ -437,8 +440,8 @@ inoremap <silent> <C-[> <ESC>
 inoremap <silent> <C-j> <C-^>
 " fコマンドなどでのIMEをOFFにする
 let g:IMState = 0
-MyAutocmd InsertEnter * let &iminsert = g:IMState
-MyAutocmd InsertLeave * let g:IMState = &iminsert|set iminsert=0 imsearch=0
+autocmd MyAutoCmd InsertEnter * let &iminsert = g:IMState
+autocmd MyAutoCmd InsertLeave * let g:IMState = &iminsert|set iminsert=0 imsearch=0
 
 " ビジュアルモードで選択した部分をヤンク文字列で置換
 vnoremap <silent> cy c<C-r>0<ESC>:let@/=@1<CR>:noh<CR>
@@ -478,7 +481,7 @@ nnoremap g<C-]> <C-]>
 "
 
 " 最後に編集した場所にカーソルを移動する "{{{
-MyAutocmd BufReadPost *
+autocmd MyAutoCmd BufReadPost *
   \ if line("'\"") > 1 && line("'\"") <= line('$') |
   \   exe "normal! g`\"" |
   \ endif
@@ -488,8 +491,8 @@ MyAutocmd BufReadPost *
 let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
 
 if has('syntax')
-  MyAutocmd InsertEnter * call s:StatusLine('Enter')
-  MyAutocmd InsertLeave * call s:StatusLine('Leave')
+  autocmd MyAutoCmd InsertEnter * call s:StatusLine('Enter')
+  autocmd MyAutoCmd InsertLeave * call s:StatusLine('Leave')
 endif
 " if has('unix') && !has('gui_running')
 "   " ESCですぐに反映されない対策
@@ -529,8 +532,8 @@ function! ZenkakuSpace()
   endif
 endfunction
 if has('syntax')
-    MyAutocmd ColorScheme       * call  ZenkakuSpace()
-    MyAutocmd VimEnter,WinEnter * match ZenkakuSpace /　/
+    autocmd MyAutoCmd ColorScheme       * call  ZenkakuSpace()
+    autocmd MyAutoCmd VimEnter,WinEnter * match ZenkakuSpace /　/
   call ZenkakuSpace()
 endif
 "}}}
@@ -565,9 +568,9 @@ endif
 "   syntax match CFunc /[A-Z_a-z]\w*\(\s*(\)\@=/
 "   highlight CFunc ctermfg=DarkCyan guifg=DarkCyan
 " endfunction
-" MyAutocmd FileType c,cpp call HighlightCFunction()
-"MyAutocmd FileType c,cpp syntax match CFunction /[a-zA-Z_]\w*(\@=/
-"MyAutocmd FileType c,cpp highlight CFunction ctermfg=DarkCyan guifg=DarkCyan
+" autocmd MyAutoCmd FileType c,cpp call HighlightCFunction()
+"autocmd MyAutoCmd FileType c,cpp syntax match CFunction /[a-zA-Z_]\w*(\@=/
+"autocmd MyAutoCmd FileType c,cpp highlight CFunction ctermfg=DarkCyan guifg=DarkCyan
 "syntax match CFunction /[a-zA-Z_]\+\w*\s*(\@=/
 " syntax match CFunction /[a-zA-Z_]\w*\s*\(\(\[[^]]*\]\s*\)\?(\s*[^\*]\)\@=/
 " syntax match CFunction /\*\s*[a-zA-Z_]\w*\s*\(\(\[\]\s*\)\?)\s*(\)\@=/
@@ -725,7 +728,7 @@ let g:unite_source_grep_default_opts = '-iRHn'
 " Save session automatically.
 let g:unite_source_session_enable_auto_save = 1
 " Load session automatically.
-MyAutocmd VimEnter * UniteSessionLoad
+autocmd MyAutoCmd VimEnter * UniteSessionLoad
 
 " キーマッピング
 " 現在開いているファイルのディレクトリ下のファイル一覧
@@ -746,7 +749,7 @@ nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline
 " unite-tag
 nnoremap <silent> [unite]tt  :<C-u>UniteWithCursorWord -buffer-name=tag -immediately tag<CR>
 nnoremap <silent> [unite]ti  :<C-u>UniteWithCursorWord -buffer-name=tag tag/include<CR>
-"MyAutocmd BufEnter *
+"autocmd MyAutoCmd BufEnter *
 "  \  if empty(&buftype) |
 "  \    nnoremap <buffer> <C-]> :<C-u>UniteWithCursorWord -immediately tag<CR> |
 "  \  endif
@@ -792,7 +795,7 @@ nnoremap <silent> [unite]a :<C-u>Unite alignta:options<CR>
 xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
 
 " uniteを開いている間のキーマッピング
-MyAutocmd FileType unite call s:unite_my_settings()
+autocmd MyAutoCmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
   "ESCでuniteを終了
   nmap <buffer> <ESC> <Plug>(unite_exit)
@@ -823,7 +826,7 @@ let g:vimfiler_data_directory = expand('$MY_VIM_TMPDIR/.vimfiler')
 " セーフモード設定
 let g:vimfiler_safe_mode_by_default = 0
 " 自動cdを有効
-let g:vimfiler_enable_auto_cd = 1
+let g:vimfiler_enable_auto_cd = 0
 if s:iswin
   " Use trashbox.
   let g:unite_kind_file_use_trashbox = 1
@@ -833,7 +836,7 @@ call vimfiler#set_execute_file('txt', 'vim')
 " キーマッピング
 nnoremap <silent> [vimfiler]e :<C-u>VimFiler -buffer-name=explorer -split -simple -winwidth=35 -toggle<CR>
 
-MyAutocmd FileType vimfiler call s:vimfiler_my_settings()
+autocmd MyAutoCmd FileType vimfiler call s:vimfiler_my_settings()
 function! s:vimfiler_my_settings()"{{{
   nmap <silent> <Space>m <Plug>(vimfiler_toggle_mark_current_line)
   nmap <silent> <S-Space>m <Plug>(vimfiler_toggle_mark_current_line_up)
@@ -937,6 +940,17 @@ let g:quickrun_config["cpp"] = {
 \    "outputter" : "my_outputter"
 \}
 
+" シンタックスチェック用コンフィグ
+let g:quickrun_config["CppSyntaxCheck"] = {
+\   "type" : "cpp",
+\   "exec" : "%c %o %s:p ",
+\   "command" : "g++",
+\   "cmdopt" : "-fsyntax-only ",
+\   "outputtter" : "my_outputter"
+\}
+
+command! CppSyntaxCheck :QuickRun CppSyntaxCheck
+
 "}}}
 
 " vim-ref "{{{
@@ -954,8 +968,8 @@ function! EnableSmartchrBasic()
     \ : search('\(\*\<bar>!\)\%#')? '= '
     \ : smartchr#one_of(' = ', ' == ', '=')
 endfunction
-MyAutocmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
-MyAutocmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
+autocmd MyAutoCmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
+autocmd MyAutoCmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
 "}}}
 
 " vim-fugitive "{{{
