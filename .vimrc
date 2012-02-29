@@ -960,10 +960,10 @@ let g:ref_use_vimproc = 1
 
 " vim-smartchr "{{{
 function! EnableSmartchrBasic()
-  inoremap <buffer><expr> + smartchr#one_of(' + ', '+', '++')
-  inoremap <buffer><expr> & smartchr#one_of(' & ', ' && ', '&')
+"  inoremap <buffer><expr> + smartchr#one_of(' + ', '+', '++')
+"  inoremap <buffer><expr> & smartchr#one_of(' & ', ' && ', '&')
   inoremap <buffer><expr> , smartchr#one_of(', ', ',')
-  inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
+"  inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
   inoremap <expr> = search('\(&\<bar><bar>\<bar>+\<bar>-\<bar>/\<bar>>\<bar><\) \%#', 'bcn')? '<bs>= '
     \ : search('\(\*\<bar>!\)\%#')? '= '
     \ : smartchr#one_of(' = ', ' == ', '=')
