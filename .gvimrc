@@ -66,9 +66,12 @@ elseif has('unix')
 elseif has('mac')
 "  set guifont=Osaka-Mono:h14
 elseif has('win32') || has('win64')
-   set guifont=Inconsolata:h13:cSHIFTJIS
-   set guifontwide=TakaoGothic:h13:cSHIFTJIS
-   set ambiwidth=double
+"  set guifont=Inconsolata:h13:cSHIFTJIS
+"  set guifontwide=TakaoGothic:h13:cSHIFTJIS
+  set guifont=Envy_Code_R_for_Powerline:h12
+  set guifontwide=TakaoGothic:h12
+  set ambiwidth=double
+  set encoding=utf8
 endif
 
 "印刷用フォント
