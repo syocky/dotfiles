@@ -886,7 +886,7 @@ let g:indent_guides_auto_colors = 1
 "}}}
 
 " vim-powerline "{{{
-let g:Powerline_symbols = 'unicode'
+let g:Powerline_symbols = 'fancy'
 "}}}
 
 " vim-quickrun "{{{
