@@ -73,6 +73,7 @@ NeoBundle 'https://github.com/Shougo/vimfiler.git'
 NeoBundle 'https://github.com/Shougo/vimproc.git'
 NeoBundle 'https://github.com/Shougo/vimshell.git'
 NeoBundle 'https://github.com/Shougo/vinarise.git'
+NeoBundle 'https://github.com/sgur/unite-qf.git'
 NeoBundle 'https://github.com/thinca/vim-fontzoom.git'
 NeoBundle 'https://github.com/thinca/vim-quickrun.git'
 NeoBundle 'https://github.com/thinca/vim-ref.git'
@@ -390,6 +391,10 @@ nnoremap <silent> <space>wj <C-w>j
 nnoremap <silent> <space>wk <C-w>k
 nnoremap <silent> <space>wl <C-w>l
 nnoremap <silent> <space>wh <C-w>h
+nnoremap <silent> <space>wJ <C-w>J
+nnoremap <silent> <space>wK <C-w>K
+nnoremap <silent> <space>wL <C-w>L
+nnoremap <silent> <space>wH <C-w>H
 nnoremap <silent> <space>wr <C-w>r
 nnoremap <silent> <space>w= <C-w>=
 nnoremap <silent> <space>ww <C-w>w
