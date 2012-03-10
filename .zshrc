@@ -65,13 +65,13 @@ autoload -Uz colors; colors
 # プロンプトをスーパーユーザと一般ユーザで色分けする
 case ${UID} in
 0)
-    PROMPT="%B%{${fg[red]}%}%/#%{${reset_color}%}%b "
-    PROMPT2="%B%{${fg[red]}%}%_#%{${reset_color}%}%b "
+    PROMPT="%B%{${fg[red]}%}[%/]#%{${reset_color}%}%b "
+    PROMPT2="%B%{${fg[red]}%}[%_]#%{${reset_color}%}%b "
     SPROMPT="%B%{${fg[red]}%}%r is correct? [n,y,a,e]:%{${reset_color}%}%b "
     ;;
 *)
-    PROMPT="%{${fg[green]}%}%/%%%{${reset_color}%} "
-    PROMPT2="%{${fg[green]}%}%_%%%{${reset_color}%} "
+    PROMPT="%{${fg[green]}%}[%/]$%{${reset_color}%} "
+    PROMPT2="%{${fg[green]}%}[%_]$%{${reset_color}%} "
     SPROMPT="%{${fg[green]}%}%r is correct? [n,y,a,e]:%{${reset_color}%} "
     ;;
 esac
