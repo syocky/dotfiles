@@ -88,9 +88,6 @@ NeoBundle 'https://github.com/tsukkee/unite-tag.git'
 NeoBundle 'https://github.com/ujihisa/unite-colorscheme.git'
 NeoBundle 'https://github.com/ujihisa/unite-font.git'
 NeoBundle 'https://github.com/vim-scripts/DoxygenToolkit.vim.git'
-NeoBundle 'https://github.com/vim-scripts/Source-Explorer-srcexpl.vim'
-NeoBundle 'https://github.com/vim-scripts/taglist.vim'
-NeoBundle 'https://github.com/vim-scripts/trinity.vim'
 
 filetype plugin on
 filetype indent on
