@@ -245,6 +245,22 @@ autocmd MyAutoCmd QuickfixCmdPost vimgrep cw
 
 " ハイライトを有効
 syntax enable
+if !s:iswin
+  "256色モード
+  set t_Co=256
+  "モードにあわせてカーソル形状変更
+  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+"  let &t_SI = "\<Esc>]12;lightgreen\x7"
+"  let &t_EI = "\<Esc>]12;white\x7"
+"   if &term == "xterm-256color"
+"     let &t_SI .= "\eP\e[3 q\e\\"
+"     let &t_EI .= "\eP\e[1 q\e\\"
+"   elseif &term == "xterm"
+"     let &t_SI .= "\e[3 q"
+"     let &t_EI .= "\e[1 q"
+"   endif
+endif
 " スプラッシュ(起動時のメッセージ)を表示しない
 "set shortmess+=I
 " エラー時の音とビジュアルベルの抑制(gvimは.gvimrcで設定)
@@ -733,7 +749,7 @@ let g:unite_source_grep_default_opts = '-iRHn'
 " Save session automatically.
 let g:unite_source_session_enable_auto_save = 1
 " Load session automatically.
-autocmd MyAutoCmd VimEnter * UniteSessionLoad
+"autocmd MyAutoCmd VimEnter * UniteSessionLoad
 
 " キーマッピング
 " 現在開いているファイルのディレクトリ下のファイル一覧
@@ -751,6 +767,8 @@ nnoremap <silent> [unite]ba :<C-u>UniteBookmarkAdd<CR>
 " アウトライン解析
 nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
 nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline<CR>
+" セッションロード
+nnoremap <silent> [unite]sl :<C-u>UniteSessionLoad<CR>
 " unite-tag
 nnoremap <silent> [unite]tt  :<C-u>UniteWithCursorWord -buffer-name=tag -immediately tag<CR>
 nnoremap <silent> [unite]ti  :<C-u>UniteWithCursorWord -buffer-name=tag tag/include<CR>
