@@ -669,13 +669,13 @@ let g:neocomplcache_dictionary_filetype_lists = {
 let g:neocomplcache_clang_use_library = 1
 let g:neocomplcache_clang_library_path = $MY_CLANG_PATH
 let g:neocomplcache_clang_user_options =
-  \ '-I '.$MY_GCC_INC_PATH.' '.
+  \ '-I '.$MY_BASE_INC_PATH.' '.
   \ '-I '.$MY_BOOST_PATH.' '.
   \ '-fms-extensions -fgnu-runtime '.
   \ '-include malloc.h '
 " include補完時のパス
 let g:neocomplcache_include_paths = {
-  \ 'cpp' : $MY_GCC_INC_PATH.'/c++,'.$MY_BOOST_PATH
+  \ 'cpp' : $MY_CPP_INC_PATH.','.$MY_BOOST_PATH
   \ }
 let g:neocomplcache_max_list = 1000
 
@@ -690,7 +690,7 @@ inoremap <expr><C-g>  neocomplcache#undo_completion()
 inoremap <expr><C-l>  neocomplcache#complete_common_string()
 
 " SuperTab like snippets behavior.
-"imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
