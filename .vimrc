@@ -60,12 +60,11 @@ NeoBundle 'git://github.com/kana/vim-smartchr.git'
 NeoBundle 'git://github.com/Lokaltog/vim-powerline.git'
 NeoBundle 'git://github.com/mattn/learn-vimscript.git'
 NeoBundle 'git://github.com/nathanaelkane/vim-indent-guides.git'
-"NeoBundle 'git://github.com/Rip-Rip/clang_complete.git'
-"NeoBundle 'git://github.com/Shougo/git-vim.git'
+NeoBundle 'git://github.com/Rip-Rip/clang_complete.git'
 NeoBundle 'git://github.com/Shougo/neobundle.vim.git'
 NeoBundle 'git://github.com/Shougo/neocomplcache.git'
-NeoBundle 'git://github.com/Shougo/neocomplcache-clang.git'
-"NeoBundle 'git://github.com/Shougo/neocomplcache-clang_complete.git'
+"NeoBundle 'git://github.com/Shougo/neocomplcache-clang.git'
+NeoBundle 'git://github.com/Shougo/neocomplcache-clang_complete.git'
 NeoBundle 'git://github.com/Shougo/neocomplcache-snippets-complete'
 NeoBundle 'git://github.com/Shougo/unite.vim.git'
 NeoBundle 'git://github.com/Shougo/vimfiler.git'
@@ -617,11 +616,18 @@ vmap <Leader>cc <Plug>(caw:I:toggle)
 "}}}
 
 " clang-complete "{{{
-" let g:clang_complete_auto = 1
-" let g:clang_use_library = 0
-" let g:clang_exec = $MY_CLANG_PATH . '/clang.exe'
-" let g:clang_user_options = '-I ' .$MY_BOOST_PATH. ' -fms-extensions -fmsc-version=1300 -fgnu-runtime -D__MSVCRT_VERSION__=0x700 -D_WIN32_WINNT=0x0500 2> NUL || exit 0"'
-" let g:clang_user_options = '2> NUL || exit 0"'
+let g:clang_auto_select = 1
+let g:clang_complete_auto = 1
+let g:clang_debug = 0
+let g:clang_use_library = 1
+let g:clang_library_path = $MY_CLANG_PATH
+let g:clang_exec = $MY_CLANG_PATH . '/clang.exe'
+let g:clang_user_options =
+\ '-fms-extensions -fgnu-runtime '.
+\ '-include malloc.h '.
+\ '-std=gnu++0x '
+"let g:clang_user_options = '-I ' .$MY_BOOST_PATH. ' -fms-extensions -fmsc-version=1300 -fgnu-runtime -D__MSVCRT_VERSION__=0x700 -D_WIN32_WINNT=0x0500 2> NUL || exit 0"'
+"let g:clang_user_options = '2> NUL || exit 0"'
 "}}}
 
 " neobundle "{{{
@@ -666,22 +672,21 @@ let g:neocomplcache_dictionary_filetype_lists = {
   \ }
 
 " neocomplcache-clang
-let g:neocomplcache_clang_use_library = 1
-let g:neocomplcache_clang_library_path = $MY_CLANG_PATH
-let g:neocomplcache_clang_user_options =
-  \ '-I '.$MY_BASE_INC_PATH.' '.
-  \ '-I '.$MY_BOOST_PATH.' '.
-  \ '-fms-extensions -fgnu-runtime '.
-  \ '-include malloc.h '
-" include補完時のパス
-let g:neocomplcache_include_paths = {
-  \ 'cpp' : $MY_CPP_INC_PATH.','.$MY_BOOST_PATH
-  \ }
-let g:neocomplcache_max_list = 1000
+" let g:neocomplcache_clang_use_library = 1
+" let g:neocomplcache_clang_library_path = $MY_CLANG_PATH
+" let g:neocomplcache_clang_user_options =
+"   \ '-I '.$MY_BASE_INC_PATH.' '.
+"   \ '-I '.$MY_BOOST_PATH.' '.
+"   \ '-fms-extensions -fgnu-runtime '.
+"   \ '-include malloc.h '
+" " include補完時のパス
+" let g:neocomplcache_include_paths = {
+"   \ 'cpp' : $MY_CPP_INC_PATH.','.$MY_BOOST_PATH
+"   \ }
+" let g:neocomplcache_max_list = 1000
 
 " neocomplcache-clang_complete
-" let g:neocomplcache_force_overwrite_completefunc = 1
-" let g:clang_complete_auto = 1
+let g:neocomplcache_force_overwrite_completefunc = 1
 
 " キーマッピング
 imap <C-k>     <Plug>(neocomplcache_snippets_expand)
