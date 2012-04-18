@@ -86,6 +86,7 @@ NeoBundle 'git://github.com/tsukkee/unite-tag.git'
 NeoBundle 'git://github.com/ujihisa/unite-colorscheme.git'
 NeoBundle 'git://github.com/ujihisa/unite-font.git'
 NeoBundle 'git://github.com/vim-scripts/DoxygenToolkit.vim.git'
+NeoBundle 'git://github.com/vim-scripts/taglist.vim.git'
 
 filetype plugin on
 filetype indent on
@@ -411,6 +412,10 @@ nnoremap <silent> <space>w= <C-w>=
 nnoremap <silent> <space>ww <C-w>w
 nnoremap <silent> <space>wo <C-w>o
 nnoremap <silent> <Space>wx <C-w>x
+nnoremap <silent> <Space>w- <C-w>10-
+nnoremap <silent> <Space>w+ <C-w>10+
+nnoremap <silent> <Space>w> <C-w>10>
+nnoremap <silent> <Space>w< <C-w>10<
 " タブ
 nnoremap <silent> <Space>tn :<C-u>tabnew<CR>
 nnoremap <silent> <Space>tc :<C-u>tabclose<CR>
@@ -771,6 +776,18 @@ nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
 nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline<CR>
 " セッションロード
 nnoremap <silent> [unite]sl :<C-u>UniteSessionLoad<CR>
+" unite-outline
+let g:unite_source_outline_filetype_options = {
+\ '*': {
+\   'auto_update': 1,
+\   'auto_update_event': 'write',
+\ },
+\ 'cpp': {
+\   'auto_update': 0,
+\ },
+\}
+call unite#set_buffer_name_option('outline', 'ignorecase', 1)
+call unite#set_buffer_name_option('outline', 'smartcase',  1)
 " unite-tag
 nnoremap <silent> [unite]tt  :<C-u>UniteWithCursorWord -buffer-name=tag -immediately tag<CR>
 nnoremap <silent> [unite]ti  :<C-u>UniteWithCursorWord -buffer-name=tag tag/include<CR>
