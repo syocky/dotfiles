@@ -329,7 +329,8 @@ autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NON
 "  syntax on
 "endif
 " カラースキーム
-colorscheme torte
+"colorscheme torte
+colorscheme desert256
 
 " ボップアップのハイライトを設定
 highlight Pmenu ctermbg=1 guibg=DarkBlue
