@@ -30,11 +30,11 @@ set linespace=4
 
 "カラー設定:
 "colorscheme desert
-"colorscheme desert256
+colorscheme desert256
 "colorscheme molokai
 "colorscheme moria
 "colorscheme solarized
-colorscheme torte
+"colorscheme torte
 "colorscheme xoria256
 "colorscheme zenburn
 
@@ -125,5 +125,5 @@ set guioptions+=a
 " 背景透過設定
 "----------------------------------------
 gui
-set transparency=220
+set transparency=230
 
