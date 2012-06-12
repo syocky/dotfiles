@@ -60,6 +60,7 @@ NeoBundle 'git://github.com/kana/vim-smartchr.git'
 NeoBundle 'git://github.com/Lokaltog/vim-powerline.git'
 NeoBundle 'git://github.com/mattn/learn-vimscript.git'
 NeoBundle 'git://github.com/nathanaelkane/vim-indent-guides.git'
+NeoBundle 'git://github.com/nanotech/jellybeans.vim.git'
 NeoBundle 'git://github.com/Rip-Rip/clang_complete.git'
 NeoBundle 'git://github.com/Shougo/neobundle.vim.git'
 NeoBundle 'git://github.com/Shougo/neocomplcache.git'
@@ -330,7 +331,8 @@ autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NON
 "endif
 " カラースキーム
 "colorscheme torte
-colorscheme desert256
+"colorscheme desert256
+colorscheme jellybeans
 
 " ボップアップのハイライトを設定
 highlight Pmenu ctermbg=1 guibg=DarkBlue

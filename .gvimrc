@@ -30,7 +30,8 @@ set linespace=4
 
 "カラー設定:
 "colorscheme desert
-colorscheme desert256
+"colorscheme desert256
+colorscheme jellybeans
 "colorscheme molokai
 "colorscheme moria
 "colorscheme solarized
