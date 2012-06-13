@@ -86,6 +86,7 @@ NeoBundle 'git://github.com/tsukkee/unite-help.git'
 NeoBundle 'git://github.com/tsukkee/unite-tag.git'
 NeoBundle 'git://github.com/ujihisa/unite-colorscheme.git'
 NeoBundle 'git://github.com/ujihisa/unite-font.git'
+NeoBundle 'git://github.com/vim-jp/cpp-vim.git'
 NeoBundle 'git://github.com/vim-scripts/DoxygenToolkit.vim.git'
 NeoBundle 'git://github.com/vim-scripts/taglist.vim.git'
 
