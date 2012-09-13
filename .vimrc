@@ -5,6 +5,8 @@
 " Vi互換をオフ
 set nocompatible
 
+scriptencoding utf-8
+
 let s:iswin = has('win32') || has('win64')
 
 if s:iswin
@@ -14,14 +16,6 @@ endif
 
 
 " 自動コマンド初期化
-" augroup vimrc
-"   autocmd!
-" augroup END
-" 
-" command!
-" \ -bang -nargs=*
-" \ MyAutoCmd
-" \ autocmd<bang> vimrc <args>
 augroup MyAutoCmd
   autocmd!
 augroup END
@@ -51,10 +45,9 @@ if has('vim_starting')
 endif
 
 " プラグイン群
-NeoBundle 'git://github.com/altercation/vim-colors-solarized.git'
 NeoBundle 'git://github.com/dannyob/quickfixstatus.git'
-NeoBundle 'git://github.com/h1mesuke/unite-outline.git'
 NeoBundle 'git://github.com/h1mesuke/vim-alignta.git'
+NeoBundle 'git://github.com/h1mesuke/unite-outline.git'
 NeoBundle 'git://github.com/jceb/vim-hier.git'
 NeoBundle 'git://github.com/kana/vim-smartchr.git'
 NeoBundle 'git://github.com/Lokaltog/vim-powerline.git'
@@ -64,10 +57,9 @@ NeoBundle 'git://github.com/nanotech/jellybeans.vim.git'
 NeoBundle 'git://github.com/Rip-Rip/clang_complete.git'
 NeoBundle 'git://github.com/Shougo/neobundle.vim.git'
 NeoBundle 'git://github.com/Shougo/neocomplcache.git'
-"NeoBundle 'git://github.com/Shougo/neocomplcache-clang.git'
-NeoBundle 'git://github.com/Shougo/neocomplcache-clang_complete.git'
 NeoBundle 'git://github.com/Shougo/neocomplcache-snippets-complete'
 NeoBundle 'git://github.com/Shougo/unite.vim.git'
+NeoBundle 'git://github.com/Shougo/unite-session.git'
 NeoBundle 'git://github.com/Shougo/vimfiler.git'
 NeoBundle 'git://github.com/Shougo/vimproc.git'
 NeoBundle 'git://github.com/Shougo/vimshell.git'
@@ -90,8 +82,7 @@ NeoBundle 'git://github.com/vim-jp/cpp-vim.git'
 NeoBundle 'git://github.com/vim-scripts/DoxygenToolkit.vim.git'
 NeoBundle 'git://github.com/vim-scripts/taglist.vim.git'
 
-filetype plugin on
-filetype indent on
+filetype plugin indent on
 
 "}}}
 
@@ -99,67 +90,15 @@ filetype indent on
 " 文字コード: "{{{
 "
 
-"scriptencoding utf-8
 set encoding=utf-8
 if s:iswin
   set termencoding=cp932
 else
   set termencoding=utf-8
 endif
-set fileencodings=iso-2022-jp,utf-8,cp932,euc-jp
 set fileformat=unix
 set fileformats=unix,dos,mac
-
-" 文字コードの自動認識
-if &encoding !=# 'utf-8'
-  set encoding=japan
-  set fileencoding=japan
-endif
-if has('iconv')
-  let s:enc_euc = 'euc-jp'
-  let s:enc_jis = 'iso-2022-jp'
-  " iconvがeucJP-msに対応しているかをチェック
-  if iconv("\x87\x64\x87\x6a", 'cp932', 'eucjp-ms') ==# "\xad\xc5\xad\xcb"
-    let s:enc_euc = 'eucjp-ms'
-    let s:enc_jis = 'iso-2022-jp-3'
-  " iconvがJISX0213に対応しているかをチェック
-  elseif iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
-    let s:enc_euc = 'euc-jisx0213'
-    let s:enc_jis = 'iso-2022-jp-3'
-  endif
-  " fileencodingsを構築
-  if &encoding ==# 'utf-8'
-    let s:fileencodings_default = &fileencodings
-    let &fileencodings = s:enc_jis .','. s:enc_euc .',cp932'
-    let &fileencodings = s:fileencodings_default .','. &fileencodings
-    unlet s:fileencodings_default
-  else
-    let &fileencodings = &fileencodings .','. s:enc_jis
-    set fileencodings+=utf-8,ucs-2le,ucs-2
-    if &encoding =~# '^\(euc-jp\|euc-jisx0213\|eucjp-ms\)$'
-      set fileencodings+=cp932
-      set fileencodings-=euc-jp
-      set fileencodings-=euc-jisx0213
-      set fileencodings-=eucjp-ms
-      let &encoding = s:enc_euc
-      let &fileencoding = s:enc_euc
-    else
-      let &fileencodings = &fileencodings .','. s:enc_euc
-    endif
-  endif
-  " 定数を処分
-  unlet s:enc_euc
-  unlet s:enc_jis
-endif
-" 日本語を含まない場合は fileencoding に encoding を使うようにする
-if has('autocmd')
-  function! AU_ReCheck_FENC()
-    if &fileencoding =~# 'iso-2022-jp' && search("[^\x01-\x7e]", 'n') == 0
-      let &fileencoding=&encoding
-    endif
-  endfunction
-  autocmd BufReadPost * call AU_ReCheck_FENC()
-endif
+set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,utf-8,cp932,sjis
 
 "}}}
 
@@ -170,18 +109,24 @@ endif
 " バックアップ、スワップファイル設定
 set backup
 set backupdir=$MY_VIM_TMPDIR/bak
+if !isdirectory(&backupdir)
+  call mkdir(&backupdir, "p")
+endif
 set backupext=.bak
 set directory=$MY_VIM_TMPDIR/swp
+if !isdirectory(&directory)
+  call mkdir(&directory, "p")
+endif
 " viminfoの出力先を設定
 set viminfo+=n$MY_VIM_TMPDIR/.viminfo
 " クリップボードを共有
-set clipboard+=unnamed
+"set clipboard+=unnamed
 " ビジュアルモードで選択したテキストが自動でクリッポボードに入る
 set clipboard+=autoselect
 " 8進数を無効にする。<C-a>,<C-x>に影響する
 set nrformats-=octal
 " キーコードやマッピングされたキー列が完了するのを待つ時間(ミリ秒)
-set timeoutlen=3500
+"set timeoutlen=3500
 " 編集結果非保存のバッファから、新しいバッファを開くときに警告を出さない
 set hidden
 " ヒストリの保存数
@@ -198,12 +143,14 @@ set backspace=indent,eol,start
 set ambiwidth=double
 " コマンドライン補完するときに強化されたものを使う
 set wildmenu
+" コマンド補完候補をリスト表示、最長マッチ
+set wildmode=list:longest
 " マウスを有効にする
 if has('mouse')
   set mouse=a
 endif
 " カレントディレクトリから親ディレクトリをさかのぼって tags ファイルを検索
-set tags& tags+=tags;
+set tags& tags+=tags
 " カレントディレクトリ以下を再帰的に検索
 "set tags+=./**/tags
 " 外部でファイルが編集された時に自動で読み込む
@@ -234,6 +181,13 @@ set hlsearch
 set grepprg=grep\ -nH
 " vimgrepでの検索後、QuickFixウィンドウを開く
 autocmd MyAutoCmd QuickfixCmdPost vimgrep cw
+" 検索で飛んだらそこを真ん中に
+for maptype in ['n', 'N', '*', '#', 'g*', 'g#', 'G']
+  execute 'nmap' maptype maptype . 'zz'
+endfor
+" コマンドラインモードでの検索で自動エスケープ
+cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
+cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 "}}}
 
@@ -274,15 +228,16 @@ if version >= 703
   "set relativenumber
 endif
 " 括弧の対応表示時間
-set showmatch matchtime=1
+"set showmatch
+set matchtime=0
 " タブ設定
-set ts=4 sw=4 sts=4 noex
+set ts=2 sw=2 sts=2 ex
 " インデント
-"set autoindent
+set autoindent
 set smartindent
 " Cインデントの設定
 set cindent
-set cinoptions+=:0,g0
+set cinoptions+=:0,g0,j1
 " タイトルを表示
 set title
 " タブページを常に表示
@@ -294,21 +249,19 @@ set cmdheight=2
 set laststatus=2
 " コマンドをステータス行に表示
 set showcmd
-" コマンド補完候補をリスト表示、最長マッチ
-set wildmode=list:full
 " 画面最後の行をできる限り表示する
 set display=lastline
 " ウィンドウ幅で行を折り返す
 set wrap
 " Tab、行末の半角スペースを明示的に表示する
 set list
-set listchars=tab:^\ ,trail:~,extends:>,precedes:<
+set listchars=tab:>-,trail:~,extends:>,precedes:<
 " スクロール時に表示を5行確保
 set scrolloff=10
 " カーソルが常に中央行
 " set scrolloff=999
 " 行間設定
-set linespace=4
+set linespace=1
 " フォールディング設定
 set foldmethod=marker
 set foldlevel=100
@@ -316,8 +269,12 @@ set foldlevel=100
 set completeopt=menuone
 " 他のバッファから補完をしない
 set complete=.
+" 改行でコメント自動挿入抑止
+autocmd MyAutoCmd FileType * setlocal formatoptions-=ro
+" Vimスクリプトでバックスラッシュ挿入でインデント抑止
+let g:vim_indent_cont = 0
 " 自動折り返しを無効化
-autocmd MyAutoCmd FileType * set textwidth=0
+autocmd MyAutoCmd FileType * setlocal textwidth=0
 " 編集中の行に下線を引く
 autocmd MyAutoCmd InsertLeave * setlocal nocursorline
 autocmd MyAutoCmd InsertEnter * setlocal cursorline
@@ -326,6 +283,33 @@ autocmd MyAutoCmd InsertEnter * setlocal cursorline
 autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
 "set cursorline
 "highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
+" ファイルタイプ毎のインデント設定
+autocmd MyAutoCmd FileType c          setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType cpp        setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType cs         setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType css        setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType diff       setlocal sw=4 sts=4 ts=4 noet
+autocmd MyAutoCmd FileType html       setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType java       setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType jsp        setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType javascript setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType perl       setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType php        setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType python     setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType ruby       setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType haml       setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType sh         setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType sql        setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType text       setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType vb         setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType vim        setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType wsh        setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType xhtml      setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType xml        setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType yaml       setlocal sw=2 sts=2 ts=2 et
+autocmd MyAutoCmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType scala      setlocal sw=2 sts=2 ts=2 et
+
 " ハイライトを有効にする
 "if &t_Co > 2 || has('gui_running')
 "  syntax on
@@ -340,14 +324,24 @@ highlight Pmenu ctermbg=1 guibg=DarkBlue
 highlight PmenuSel ctermbg=5 guibg=DarkMagenta
 highlight PmenuSbar ctermbg=0 guibg=Black
 
+" Javaのハイライト設定
+"全てのクラスをハイライトする
+let g:java_highlight_all = 1
+"メソッド宣言文をハイライト
+let g:java_highlight_functions = 1
+"デバッグ分(print系)をハイライト
+let g:java_highlight_debug = 1
+"余分な空白に対してハイライト
+let g:java_space_errors = 1
+
 " doxygenのハイライト設定
 let g:load_doxygen_syntax = 1
 
 " ステータスラインに文字コード等表示 "{{{
 " if has('iconv')
-"   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=[0x%{FencB()}]\ (%v,%l)/%L%8P\ 
+"   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=[0x%{FencB()}]\ (%v,%l)/%L%8P\
 " else
-"   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=\ (%v,%l)/%L%8P\ 
+"   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=\ (%v,%l)/%L%8P\
 " endif
 
 " FencB() : カーソル上の文字コードをエンコードに応じた表示にする
@@ -456,7 +450,7 @@ noremap q? <Nop>
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
 " ノーマルモード時にEnter2回で改行
-nnoremap <CR><CR> :<C-u>call append(expand('.'), '')<CR>j
+"nnoremap <CR><CR> :<C-u>call append(expand('.'), '')<CR>j
 
 " 挿入モード終了時にIME状態を保存しない
 inoremap <silent> <ESC> <ESC>
@@ -484,6 +478,8 @@ vnoremap <C-V> d"*P
 cnoremap <C-V> <C-R>*
 " 選択部分をクリップボードに切り取り
 vnoremap <C-X> "*d<ESC>
+" 全選択
+nnoremap <C-a> ggVG
 
 " 括弧までを消したり置換する
 " http://vim-users.jp/2011/04/hack214/
@@ -507,12 +503,12 @@ nnoremap g<C-]> <C-]>
 
 " 最後に編集した場所にカーソルを移動する "{{{
 autocmd MyAutoCmd BufReadPost *
-  \ if line("'\"") > 1 && line("'\"") <= line('$') |
-  \   exe "normal! g`\"" |
-  \ endif
+\ if line("'\"") > 1 && line("'\"") <= line('$') |
+\   exe "normal! g`\"" |
+\ endif
 "}}}
 
-" 挿入モード時、ステータスラインのカラー変更 "{{{
+" 挿入モード時、ステータスラインのカラー変更
 let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
 
 if has('syntax')
@@ -545,21 +541,17 @@ function! s:GetHighlight(hi) "{{{
   return hl
 endfunction "}}}
 
-"}}}
-
-" 全角スペースを表示 "{{{
-"scriptencoding cp932
-function! ZenkakuSpace()
-  silent! let hi = s:GetHighlight('ZenkakuSpace')
+" 全角スペース、行末スペースを強調表示 "{{{
+function! HighlightSpace()
+  silent! let hi = s:GetHighlight('HighlightSpace')
   if hi =~ 'E411' || hi =~ 'cleared$'
-"    highlight ZenkakuSpace cterm=underline ctermfg=darkgrey gui=underline guifg=darkgrey
-    highlight ZenkakuSpace cterm=underline ctermfg=red gui=underline guifg=red
+    highlight HighlightSpace cterm=underline ctermfg=red gui=underline guifg=red
   endif
 endfunction
 if has('syntax')
-    autocmd MyAutoCmd ColorScheme       * call  ZenkakuSpace()
-    autocmd MyAutoCmd VimEnter,WinEnter * match ZenkakuSpace /　/
-  call ZenkakuSpace()
+    autocmd MyAutoCmd ColorScheme       * call  HighlightSpace()
+    autocmd MyAutoCmd VimEnter,WinEnter * match HighlightSpace /　\|\s\+$/
+  call HighlightSpace()
 endif
 "}}}
 
@@ -602,7 +594,7 @@ endif
 " highlight CFunction ctermfg=DarkCyan guifg=DarkCyan
 "}}}
 
-" Quickfixウィンドウの開閉をトグル
+" Quickfixウィンドウの開閉をトグル "{{{
 function! s:toggle_quickfix_window()
   let _ = winnr('$')
   cclose
@@ -611,6 +603,31 @@ function! s:toggle_quickfix_window()
   endif
 endfunction
 nnoremap <silent> <Space>qt :<C-u>call <SID>toggle_quickfix_window()<CR>
+"}}}
+
+" clipboardにunnamedを追加 "{{{
+function! s:toggle_clipboard_unnamed()
+  if &clipboard =~# 'unnamed'
+    set clipboard-=unnamed
+    echo 'clipboard mode OFF'
+  else
+    set clipboard+=unnamed
+    echo 'clipboard mode ON'
+  endif
+endfunction
+command! ToggleClipboardUnnamed call s:toggle_clipboard_unnamed()
+nnoremap <silent> <Space>P :<C-u>call <SID>toggle_clipboard_unnamed()<CR>
+"}}}
+
+" 末尾空白削除 "{{{
+function! s:trim_last_white_space() range
+  execute a:firstline . ',' . a:lastline . 's/\s\+$//e'
+endfunction
+command! -range=% Trim :<line1>,<line2>call <SID>trim_last_white_space()
+nnoremap <silent> <Space>tr :<C-u>%Trim<CR>
+vnoremap <silent> <Space>tr :<C-u>Trim<CR>
+"}}}
+
 "}}}
 
 "----------------------------------------
@@ -625,8 +642,8 @@ vmap <Leader>cc <Plug>(caw:I:toggle)
 "}}}
 
 " clang-complete "{{{
-let g:clang_auto_select = 1
-let g:clang_complete_auto = 1
+let g:clang_auto_select = 0
+let g:clang_complete_auto = 0
 let g:clang_debug = 0
 let g:clang_use_library = 1
 let g:clang_library_path = $MY_CLANG_PATH
@@ -635,8 +652,13 @@ let g:clang_user_options =
 \ '-fms-extensions -fgnu-runtime '.
 \ '-include malloc.h '.
 \ '-std=gnu++0x '
-"let g:clang_user_options = '-I ' .$MY_BOOST_PATH. ' -fms-extensions -fmsc-version=1300 -fgnu-runtime -D__MSVCRT_VERSION__=0x700 -D_WIN32_WINNT=0x0500 2> NUL || exit 0"'
-"let g:clang_user_options = '2> NUL || exit 0"'
+"}}}
+
+" jellybeans "{{{
+" コメントのitalicを解除
+let g:jellybeans_overrides = {
+\ 'Comment' : { 'gui' : 'NONE' }
+\}
 "}}}
 
 " neobundle "{{{
@@ -659,11 +681,20 @@ let g:neocomplcache_enable_auto_select = 1
 let g:neocomplcache_enable_auto_delimiter = 1
 " _区切りの補完を有効設定
 let g:neocomplcache_enable_underbar_completion = 1
+" completefuncを強制上書き
+let g:neocomplcache_force_overwrite_completefunc = 1
 " キーワードパターン定義
 if !exists('g:neocomplcache_keyword_patterns')
   let g:neocomplcache_keyword_patterns = {}
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+" オムニ補完
+autocmd MyAutoCmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd MyAutoCmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd MyAutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd MyAutoCmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd MyAutoCmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
 " オムニ補完のキーワードパターン定義
 if !exists('g:neocomplcache_omni_patterns')
   let g:neocomplcache_omni_patterns = {}
@@ -673,30 +704,23 @@ let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.java = '\%(\h\w*\|)\)\.'
+if !exists('g:neocomplcache_force_omni_patterns')
+  let g:neocomplcache_force_omni_patterns = {}
+endif
+"let g:neocomplcache_force_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|::'
 " 辞書ファイルの定義
 let g:neocomplcache_dictionary_filetype_lists = {
-  \ 'default'  : '',
-  \ 'vimshell' : $MY_VIM_TMPDIR.'/.vimshell/command-history',
-  \ 'java'     : $MY_VIMRUNTIME.'/dict/java.dict'
-  \ }
-
-" neocomplcache-clang
-" let g:neocomplcache_clang_use_library = 1
-" let g:neocomplcache_clang_library_path = $MY_CLANG_PATH
-" let g:neocomplcache_clang_user_options =
-"   \ '-I '.$MY_BASE_INC_PATH.' '.
-"   \ '-I '.$MY_BOOST_PATH.' '.
-"   \ '-fms-extensions -fgnu-runtime '.
-"   \ '-include malloc.h '
-" " include補完時のパス
-" let g:neocomplcache_include_paths = {
-"   \ 'cpp' : $MY_CPP_INC_PATH.','.$MY_BOOST_PATH
-"   \ }
-" let g:neocomplcache_max_list = 1000
-
-" neocomplcache-clang_complete
-let g:neocomplcache_force_overwrite_completefunc = 1
-
+\ 'default'  : '',
+\ 'vimshell' : $MY_VIM_TMPDIR.'/.vimshell/command-history',
+\ 'java'     : $MY_VIMRUNTIME.'/dict/java.dict'
+\ }
+" Javaのinclude補完用
+autocmd MyAutoCmd FileType java setlocal include=^import | setlocal includeexpr=substitute(v:fname,'\\.','/','g')
+" includeファイルパス
+let g:neocomplcache_include_paths = {
+\ 'java' : '.,$MY_JAVA_SRC_PATH,$MY_ANDROID_SRC_PATH'
+\ }
 " キーマッピング
 imap <C-k>     <Plug>(neocomplcache_snippets_expand)
 smap <C-k>     <Plug>(neocomplcache_snippets_expand)
@@ -711,8 +735,8 @@ imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>
 "inoremap <expr><CR>  neocomplcache#close_popup() . "\<CR>"
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ neocomplcache#start_manual_complete()
+\ <SID>check_back_space() ? "\<TAB>" :
+\ neocomplcache#start_manual_complete()
 function! s:check_back_space()"{{{
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~ '\s'
@@ -729,10 +753,10 @@ inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
 " restart.vim "{{{
 command!
-  \ -bar
-  \ RestartWithSession
-  \ let g:restart_sessionoptions = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
-  \ | Restart
+\ -bar
+\ RestartWithSession
+\ let g:restart_sessionoptions = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
+\ | Restart
 "}}}
 
 " unite "{{{
@@ -759,6 +783,7 @@ let g:unite_source_grep_default_opts = '-iRHn'
 " For unite-session.
 " Save session automatically.
 let g:unite_source_session_enable_auto_save = 1
+let g:unite_source_session_options = "blank,buffers,curdir,folds,help,tabpages,winsize"
 " Load session automatically.
 "autocmd MyAutoCmd VimEnter * UniteSessionLoad
 
@@ -810,31 +835,31 @@ nnoremap <silent> [unite]pc :<C-u>Unite -auto-preview colorscheme<CR>
 nnoremap <silent> [unite]pf :<C-u>Unite -auto-preview font<CR>
 " unite-alignta
 let g:unite_source_alignta_preset_arguments = [
-  \ ["Align at '='", '=>\='],
-  \ ["Align at ':'", '01 :'],
-  \ ["Align at '|'", '|'   ],
-  \ ["Align at ')'", '0 )' ],
-  \ ["Align at ']'", '0 ]' ],
-  \ ["Align at '}'", '}'   ],
-  \]
+\ ["Align at '='", '=>\='],
+\ ["Align at ':'", '01 :'],
+\ ["Align at '|'", '|'   ],
+\ ["Align at ')'", '0 )' ],
+\ ["Align at ']'", '0 ]' ],
+\ ["Align at '}'", '}'   ],
+\]
 let s:comment_leadings = '^\s*\("\|#\|/\*\|//\|<!--\)'
 let g:unite_source_alignta_preset_options = [
-  \ ["Justify Left",      '<<' ],
-  \ ["Justify Center",    '||' ],
-  \ ["Justify Right",     '>>' ],
-  \ ["Justify None",      '==' ],
-  \ ["Shift Left",        '<-' ],
-  \ ["Shift Right",       '->' ],
-  \ ["Shift Left  [Tab]", '<--'],
-  \ ["Shift Right [Tab]", '-->'],
-  \ ["Margin 0:0",        '0'  ],
-  \ ["Margin 0:1",        '01' ],
-  \ ["Margin 1:0",        '10' ],
-  \ ["Margin 1:1",        '1'  ],
-  \
-  \ 'v/' . s:comment_leadings,
-  \ 'g/' . s:comment_leadings,
-  \]
+\ ["Justify Left",      '<<' ],
+\ ["Justify Center",    '||' ],
+\ ["Justify Right",     '>>' ],
+\ ["Justify None",      '==' ],
+\ ["Shift Left",        '<-' ],
+\ ["Shift Right",       '->' ],
+\ ["Shift Left  [Tab]", '<--'],
+\ ["Shift Right [Tab]", '-->'],
+\ ["Margin 0:0",        '0'  ],
+\ ["Margin 0:1",        '01' ],
+\ ["Margin 1:0",        '10' ],
+\ ["Margin 1:1",        '1'  ],
+\
+\ 'v/' . s:comment_leadings,
+\ 'g/' . s:comment_leadings,
+\]
 unlet s:comment_leadings
 
 nnoremap <silent> [unite]a :<C-u>Unite alignta:options<CR>
@@ -871,8 +896,10 @@ let g:vimfiler_as_default_explorer = 1
 let g:vimfiler_data_directory = expand('$MY_VIM_TMPDIR/.vimfiler')
 " セーフモード設定
 let g:vimfiler_safe_mode_by_default = 0
-" 自動cdを有効
+" 自動cdのON/OFF
 let g:vimfiler_enable_auto_cd = 0
+" ファイル編集アクション
+"let g:vimfiler_edit_action = 'tabopen'
 if s:iswin
   " Use trashbox.
   let g:unite_kind_file_use_trashbox = 1
@@ -880,7 +907,7 @@ endif
 " ファイル関連付け
 call vimfiler#set_execute_file('txt', 'vim')
 " キーマッピング
-nnoremap <silent> [vimfiler]e :<C-u>VimFiler -buffer-name=explorer -split -simple -winwidth=35 -toggle<CR>
+nnoremap <silent> [vimfiler]e :<C-u>VimFilerExplorer<CR>
 
 autocmd MyAutoCmd FileType vimfiler call s:vimfiler_my_settings()
 function! s:vimfiler_my_settings()"{{{
@@ -914,18 +941,13 @@ noremap <silent> [vimsh]t :<C-u>VimShellTab<CR>
 noremap <silent> [vimsh]p :<C-u>VimShellPop<CR>
 "}}}
 
-" vim-colors-solarized
-"set background=dark
-"let g:solarized_contrast="low"
-"let g:solarized_italic=0
-"colorscheme solarized
-
 " vim-indent-guides "{{{
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_auto_colors = 1
 "autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=DarkCyan ctermbg=DarkCyan
 "autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=DarkBlue ctermbg=DarkBlue
+nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 "}}}
 
 " vim-fontzoom "{{{
@@ -947,12 +969,12 @@ endif
 " エラー : quickfix
 " 成功   : buffer
 let g:quickrun_config["_"] = {
-  \ "runner/vimproc/updatetime" : 80,
-  \ "outputter/buffer/split" : ":rightbelow 8sp",
-  \ "outputter/error/error" : "quickfix",
-  \ "outputter/error/success" : "buffer",
-  \ "outputter" : "error",
-  \ "runner" : "vimproc",
+\ "runner/vimproc/updatetime" : 80,
+\ "outputter/buffer/split" : ":rightbelow 8sp",
+\ "outputter/error/error" : "quickfix",
+\ "outputter/error/success" : "buffer",
+\ "outputter" : "error",
+\ "runner" : "vimproc",
 \ }
 
 " コンパイラ言語用の outputter
@@ -984,16 +1006,16 @@ let g:quickrun_config["cpp"] = {
 \    "command" : "g++",
 \    "cmdopt"    : "-Wall -I ".$MY_BOOST_PATH,
 \    "outputter" : "my_outputter"
-\}
+\ }
 
 " シンタックスチェック用コンフィグ
 let g:quickrun_config["CppSyntaxCheck"] = {
-\   "type" : "cpp",
-\   "exec" : "%c %o %s:p ",
-\   "command" : "g++",
-\   "cmdopt" : "-fsyntax-only ",
-\   "outputtter" : "my_outputter"
-\}
+\ "type" : "cpp",
+\ "exec" : "%c %o %s:p ",
+\ "command" : "g++",
+\ "cmdopt" : "-fsyntax-only ",
+\ "outputtter" : "my_outputter"
+\ }
 
 command! CppSyntaxCheck :QuickRun CppSyntaxCheck
 
@@ -1011,8 +1033,8 @@ function! EnableSmartchrBasic()
   inoremap <buffer><expr> , smartchr#one_of(', ', ',')
 "  inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
   inoremap <expr> = search('\(&\<bar><bar>\<bar>+\<bar>-\<bar>/\<bar>>\<bar><\) \%#', 'bcn')? '<bs>= '
-    \ : search('\(\*\<bar>!\)\%#')? '= '
-    \ : smartchr#one_of(' = ', ' == ', '=')
+  \ : search('\(\*\<bar>!\)\%#')? '= '
+  \ : smartchr#one_of(' = ', ' == ', '=')
 endfunction
 autocmd MyAutoCmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
 autocmd MyAutoCmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
@@ -1035,6 +1057,12 @@ nnoremap <Leader>gb :<C-u>Gblame<Enter>
 " 検索後に移動しない設定
 map * <Plug>(visualstar-*)N
 map # <Plug>(visualstar-#)N
+"}}}
+
+" taglist "{{{
+" 現在編集中のソースのタグしか表示しない
+let Tlist_Show_One_File = 1
+nnoremap <Leader>tl :<C-u>TlistToggle<CR>
 "}}}
 
 "}}}
