@@ -39,13 +39,10 @@ colorscheme jellybeans
 "colorscheme xoria256
 "colorscheme zenburn
 
-"カーソル行に下線表示
-"set cursorline
-"highlight CursorLine gui=underline guifg=NONE guibg=NONE
+"マルチバイト文字系のlistcharsで表示される設定はgvimrcに書かないと反映されない
+set listchars=tab:»-,trail:~,extends:»,precedes:«,nbsp:%
 
 " ボップアップのハイライトを設定
-" highlight Pmenu ctermbg=5 guibg=DarkMagenta
-" highlight PmenuSel ctermbg=1 guibg=DarkBlue
 highlight Pmenu ctermbg=1 guibg=DarkBlue
 highlight PmenuSel ctermbg=5 guibg=DarkMagenta
 highlight PmenuSbar ctermbg=0 guibg=Black
@@ -59,7 +56,7 @@ endif
 "フォント設定
 "guifont : 半角フォントの指定
 "guifontwide : 全角フォントの指定
-"ambiwidth : 特殊文字(句読点や引用符など)の指定
+"ambiwidth : 特殊文字（句読点や引用符など）の指定
 if has('xfontset')
 "  set guifontset=a14,r14,k14
 elseif has('unix')
@@ -68,11 +65,14 @@ elseif has('mac')
 "  set guifont=Osaka-Mono:h14
 elseif has('win32') || has('win64')
 "  set guifont=Inconsolata:h13:cSHIFTJIS
-"  set guifontwide=TakaoGothic:h13:cSHIFTJIS
+"  set guifont=Inconsolata-dz\ for\ Powerline:h11
+"  set guifontwide=TakaoGothic:h12
+"  set guifontwide=Migu\ 1M:h11
 "  set guifont=Envy_Code_R_for_Powerline:h12
 "  set guifontwide=TakaoGothic:h12
   set guifont=Ricty\ Regular\ for\ Powerline:h12
-  set guifontwide=Ricty\ Regular:h12
+  set guifontwide=Ricty:h12
+"  set guifontwide=VL\ Gothic:h11
   set ambiwidth=double
 endif
 
@@ -116,6 +116,9 @@ if filereadable(expand(s:infofile))
 endif
 unlet s:infofile
 
+" 全画面表示
+autocmd MyAutoCmd GUIEnter * simalt ~x
+
 "----------------------------------------
 " マウス設定
 "----------------------------------------
@@ -125,6 +128,6 @@ set guioptions+=a
 "----------------------------------------
 " 背景透過設定
 "----------------------------------------
-gui
-set transparency=230
+"gui
+"set transparency=240
 
