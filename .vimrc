@@ -77,7 +77,6 @@ NeoBundle 'tyru/restart.vim'
 NeoBundle 'tsukkee/unite-help'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'ujihisa/unite-colorscheme'
-NeoBundle 'ujihisa/unite-font'
 NeoBundle 'vim-jp/cpp-vim'
 NeoBundle 'vim-scripts/DoxygenToolkit.vim'
 NeoBundle 'vim-scripts/taglist.vim'
@@ -831,8 +830,6 @@ nnoremap <silent> [unite]hc :<C-u>UniteWithCursorWord help<CR>
 nnoremap <silent> [unite]g  :<C-u>Unite grep -buffer-name=search -no-quit<CR>
 " unite-colorscheme
 nnoremap <silent> [unite]pc :<C-u>Unite -auto-preview colorscheme<CR>
-" unite-font
-nnoremap <silent> [unite]pf :<C-u>Unite -auto-preview font<CR>
 " unite-alignta
 let g:unite_source_alignta_preset_arguments = [
 \ ["Align at '='", '=>\='],
