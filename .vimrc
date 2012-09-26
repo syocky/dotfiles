@@ -5,8 +5,6 @@
 " Vi互換をオフ
 set nocompatible
 
-scriptencoding utf-8
-
 let s:iswin = has('win32') || has('win64')
 
 if s:iswin
@@ -95,6 +93,7 @@ if s:iswin
 else
   set termencoding=utf-8
 endif
+scriptencoding utf-8
 set fileformat=unix
 set fileformats=unix,dos,mac
 set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,utf-8,cp932,sjis
@@ -214,10 +213,6 @@ if !s:iswin
 endif
 " スプラッシュ(起動時のメッセージ)を表示しない
 "set shortmess+=I
-" エラー時の音とビジュアルベルの抑制(gvimは.gvimrcで設定)
-set noerrorbells
-set novisualbell
-set visualbell t_vb=
 " マクロ実行中などの画面再描画を行わない
 "set lazyredraw
 " 行番号表示
@@ -243,7 +238,7 @@ set title
 set showtabline=2
 " タブのラベル表示設定
 set guitablabel=%N:%t
-" コマンドラインの高さ (gvimはgvimrcで指定)
+" コマンドラインの高さ
 set cmdheight=2
 set laststatus=2
 " コマンドをステータス行に表示
@@ -254,13 +249,14 @@ set display=lastline
 set wrap
 " Tab、行末の半角スペースを明示的に表示する
 set list
-set listchars=tab:>-,trail:~,extends:>,precedes:<
+"set listchars=tab:>-,trail:~,extends:>,precedes:<
+set listchars=tab:»-,trail:~,extends:»,precedes:«,nbsp:%
 " スクロール時に表示を5行確保
 set scrolloff=10
 " カーソルが常に中央行
 " set scrolloff=999
 " 行間設定
-set linespace=1
+set linespace=2
 " フォールディング設定
 set foldmethod=marker
 set foldlevel=100
@@ -277,11 +273,8 @@ autocmd MyAutoCmd FileType * setlocal textwidth=0
 " 編集中の行に下線を引く
 autocmd MyAutoCmd InsertLeave * setlocal nocursorline
 autocmd MyAutoCmd InsertEnter * setlocal cursorline
-"autocmd MyAutoCmd InsertLeave * highlight CursorLine ctermfg=145 guifg=#c2bfa5 guibg=#000000
-"autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=2 ctermbg=NONE gui=underline guifg=#1E90FF guibg=NONE
 autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
-"set cursorline
-"highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
+
 " ファイルタイプ毎のインデント設定
 autocmd MyAutoCmd FileType c          setlocal sw=4 sts=4 ts=4 et
 autocmd MyAutoCmd FileType cpp        setlocal sw=4 sts=4 ts=4 et
@@ -309,6 +302,21 @@ autocmd MyAutoCmd FileType yaml       setlocal sw=2 sts=2 ts=2 et
 autocmd MyAutoCmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
 autocmd MyAutoCmd FileType scala      setlocal sw=2 sts=2 ts=2 et
 
+if has('gui_running')
+  set guioptions&
+  set guioptions-=T
+  set guioptions-=m
+  " ビジュアル選択を自動的にクリップボードへ
+  set guioptions+=a
+
+  if has('win32') || has('win64')
+    set guifont=Ricty\ Regular\ for\ Powerline:h12
+    set guifontwide=Ricty:h12
+  endif
+
+  autocmd MyAutoCmd GUIEnter * simalt ~x
+endif
+
 " ハイライトを有効にする
 "if &t_Co > 2 || has('gui_running')
 "  syntax on
@@ -316,12 +324,23 @@ autocmd MyAutoCmd FileType scala      setlocal sw=2 sts=2 ts=2 et
 " カラースキーム
 "colorscheme torte
 "colorscheme desert256
+
+" jellybeansのコメントのitalicを解除
+let g:jellybeans_overrides = {
+\ 'Comment' : { 'gui' : 'NONE' }
+\}
 colorscheme jellybeans
 
 " ボップアップのハイライトを設定
 highlight Pmenu ctermbg=1 guibg=DarkBlue
 highlight PmenuSel ctermbg=5 guibg=DarkMagenta
 highlight PmenuSbar ctermbg=0 guibg=Black
+
+"IMEの状態をカラー表示
+if has('multi_byte_ime')
+  highlight Cursor guifg=NONE guibg=Green
+  highlight CursorIM guifg=NONE guibg=Purple
+endif
 
 " Javaのハイライト設定
 "全てのクラスをハイライトする
@@ -651,13 +670,6 @@ let g:clang_user_options =
 \ '-fms-extensions -fgnu-runtime '.
 \ '-include malloc.h '.
 \ '-std=gnu++0x '
-"}}}
-
-" jellybeans "{{{
-" コメントのitalicを解除
-let g:jellybeans_overrides = {
-\ 'Comment' : { 'gui' : 'NONE' }
-\}
 "}}}
 
 " neobundle "{{{
