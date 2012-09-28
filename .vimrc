@@ -52,6 +52,7 @@ NeoBundle 'Lokaltog/vim-powerline'
 NeoBundle 'mattn/learn-vimscript'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'nanotech/jellybeans.vim'
+NeoBundle 'osyo-manga/vim-reanimate'
 NeoBundle 'Rip-Rip/clang_complete'
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neocomplcache'
@@ -103,6 +104,11 @@ set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp
 "----------------------------------------
 " 基本設定: "{{{
 "
+
+" エラー時の音とビジュアルベルの抑制
+set noerrorbells
+set visualbell t_vb=
+autocmd MyAutoCmd GUIEnter * set visualbell t_vb=
 
 " バックアップ、スワップファイル設定
 set backup
@@ -789,13 +795,13 @@ let g:unite_source_file_mru_limit = 50
 let g:unite_source_file_mru_filename_format = ''
 
 " grepデフォルトオプション指定
-let g:unite_source_grep_default_opts = '-iRHn'
+"let g:unite_source_grep_default_opts = '-iRHn'
 
 " For unite-session.
 " Save session automatically.
-let g:unite_source_session_enable_auto_save = 1
-let g:unite_source_session_options = "blank,buffers,curdir,folds,help,tabpages,winsize"
-let g:unite_source_session_enable_beta_features = 1
+let g:unite_source_session_enable_auto_save = 0
+let g:unite_source_session_options = "curdir,folds,globals,help,localoptions,slash,tabpages,winsize"
+let g:unite_source_session_enable_beta_features = 0
 "autocmd MyAutoCmd VimEnter * UniteSessionLoad
 
 " キーマッピング
@@ -815,7 +821,7 @@ nnoremap <silent> [unite]ba :<C-u>UniteBookmarkAdd<CR>
 nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
 nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline<CR>
 " セッションロード
-nnoremap <silent> [unite]sl :<C-u>UniteSessionLoad<CR>
+"nnoremap <silent> [unite]sl :<C-u>UniteSessionLoad<CR>
 " unite-outline
 let g:unite_source_outline_filetype_options = {
 \ '*': {
@@ -1028,6 +1034,28 @@ let g:quickrun_config["CppSyntaxCheck"] = {
 
 command! CppSyntaxCheck :QuickRun CppSyntaxCheck
 
+"}}}
+
+" vim-reanimate "{{{
+" 保存先のディレクトリ
+let g:reanimate_save_dir = expand('$MY_VIM_TMPDIR/.reanimate')
+
+" デフォルトの保存名
+let g:reanimate_default_save_name = "latest"
+
+" sessionoptions
+let g:reanimate_sessionoptions = "buffers,curdir,folds,globals,help,localoptions,slash,tabpages,winsize"
+
+" 終了時に自動保存
+autocmd MyAutoCmd VimLeavePre * ReanimateSave
+" 開始時に自動復元
+"autocmd MyAutoCmd VimEnter * ReanimateLoad
+
+" unite-reanimate
+" 保存
+nnoremap <silent> [unite]ss :<C-u>Unite reanimate -default-action=reanimate_save<CR>
+" 復元
+nnoremap <silent> [unite]sl :<C-u>Unite reanimate -default-action=reanimate_load<CR>
 "}}}
 
 " vim-ref "{{{
