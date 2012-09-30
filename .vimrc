@@ -65,6 +65,7 @@ NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vinarise'
 NeoBundle 'sgur/unite-qf'
 NeoBundle 'thinca/vim-fontzoom'
+NeoBundle 'thinca/vim-logcat'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-unite-history'
@@ -72,13 +73,16 @@ NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tyru/caw.vim'
+NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'tyru/restart.vim'
 NeoBundle 'tsukkee/unite-help'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'vim-jp/cpp-vim'
+NeoBundle 'vim-scripts/DirDiff.vim'
 NeoBundle 'vim-scripts/DoxygenToolkit.vim'
 NeoBundle 'vim-scripts/taglist.vim'
+NeoBundle 'zhaocai/unite-scriptnames'
 
 filetype plugin indent on
 
@@ -123,6 +127,8 @@ if !isdirectory(&directory)
 endif
 " viminfoの出力先を設定
 set viminfo+=n$MY_VIM_TMPDIR/.viminfo
+" セッション項目
+set sessionoptions=blank,buffers,curdir,folds,help,localoptions,slash,tabpages
 " クリップボードを共有
 "set clipboard+=unnamed
 " ビジュアルモードで選択したテキストが自動でクリッポボードに入る
@@ -159,6 +165,8 @@ set tags& tags+=tags
 "set tags+=./**/tags
 " 外部でファイルが編集された時に自動で読み込む
 set autoread
+" helpの検索順序
+set helplang=ja,en
 " <Leader>を, に設定
 let mapleader=","
 
@@ -768,11 +776,17 @@ inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
 "}}}
 
+" open-browser.vim "{{{
+let g:netrw_nogx = 1 " disable netrw's gx mapping.
+nmap <Leader>bs <Plug>(openbrowser-smart-search)
+vmap <Leader>bs <Plug>(openbrowser-smart-search)
+"}}}
+
 " restart.vim "{{{
 command!
 \ -bar
 \ RestartWithSession
-\ let g:restart_sessionoptions = 'blank,buffers,curdir,folds,help,localoptions,tabpages'
+\ let g:restart_sessionoptions = &sessionoptions
 \ | Restart
 "}}}
 
@@ -800,8 +814,8 @@ let g:unite_source_file_mru_filename_format = ''
 " For unite-session.
 " Save session automatically.
 let g:unite_source_session_enable_auto_save = 0
-let g:unite_source_session_options = "curdir,folds,globals,help,localoptions,slash,tabpages,winsize"
-let g:unite_source_session_enable_beta_features = 0
+let g:unite_source_session_options = &sessionoptions
+let g:unite_source_session_enable_beta_features = 1
 "autocmd MyAutoCmd VimEnter * UniteSessionLoad
 
 " キーマッピング
@@ -1044,7 +1058,28 @@ let g:reanimate_save_dir = expand('$MY_VIM_TMPDIR/.reanimate')
 let g:reanimate_default_save_name = "latest"
 
 " sessionoptions
-let g:reanimate_sessionoptions = "buffers,curdir,folds,globals,help,localoptions,slash,tabpages,winsize"
+let g:reanimate_sessionoptions = &sessionoptions
+
+" ユーザで hook する event
+let s:event = {
+\	"name" : "user_event",
+\}
+
+function! s:event.load_pre_post(...)
+  " 復元前にタブを削除する
+  :tabonly
+endfunction
+
+function! s:event.save_pre(...)
+  " 保存前に args を削除する
+  try
+    :execute "argd *"
+  catch
+  endtry
+endfunction
+
+call reanimate#hook(s:event)
+unlet s:event
 
 " 終了時に自動保存
 autocmd MyAutoCmd VimLeavePre * ReanimateSave
