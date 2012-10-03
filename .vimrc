@@ -18,14 +18,14 @@ augroup MyAutoCmd
   autocmd!
 augroup END
 
-" ユーザランタイムパス設定
+" ユーザランタイムパス
 if s:iswin
   let $MY_VIMRUNTIME = expand('~/vimfiles')
 else
   let $MY_VIMRUNTIME = expand('~/.vim')
 endif
 
-" 一時ファイルパス設定
+" 一時ファイルパス
 let $MY_VIM_TMPDIR = expand('$MY_VIMRUNTIME/.tmp')
 
 filetype off
@@ -65,6 +65,7 @@ NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vinarise'
 NeoBundle 'sgur/unite-qf'
 NeoBundle 'thinca/vim-fontzoom'
+NeoBundle 'thinca/vim-localrc'
 NeoBundle 'thinca/vim-logcat'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'thinca/vim-ref'
@@ -101,7 +102,7 @@ endif
 scriptencoding utf-8
 set fileformat=unix
 set fileformats=unix,dos,mac
-set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,utf-8,cp932,sjis
+set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,utf-8,cp932
 
 "}}}
 
@@ -114,7 +115,7 @@ set noerrorbells
 set visualbell t_vb=
 autocmd MyAutoCmd GUIEnter * set visualbell t_vb=
 
-" バックアップ、スワップファイル設定
+" バックアップ、スワップファイル
 set backup
 set backupdir=$MY_VIM_TMPDIR/bak
 if !isdirectory(&backupdir)
@@ -125,14 +126,12 @@ set directory=$MY_VIM_TMPDIR/swp
 if !isdirectory(&directory)
   call mkdir(&directory, "p")
 endif
-" viminfoの出力先を設定
-set viminfo+=n$MY_VIM_TMPDIR/.viminfo
+" viminfoの出力先
+set viminfo& viminfo+=n$MY_VIM_TMPDIR/.viminfo
 " セッション項目
 set sessionoptions=blank,buffers,curdir,folds,help,localoptions,slash,tabpages
-" クリップボードを共有
-"set clipboard+=unnamed
 " ビジュアルモードで選択したテキストが自動でクリッポボードに入る
-set clipboard+=autoselect
+set clipboard& clipboard+=autoselect
 " 8進数を無効にする。<C-a>,<C-x>に影響する
 set nrformats-=octal
 " キーコードやマッピングされたキー列が完了するのを待つ時間(ミリ秒)
@@ -142,7 +141,7 @@ set hidden
 " ヒストリの保存数
 set history=100
 " 日本語の行の連結時には空白を入力しない
-set formatoptions+=mM
+set formatoptions& formatoptions+=mM
 " Visual blockモードでフリーカーソルを有効にする
 set virtualedit=block
 " カーソルキーで行末／行頭の移動可能に設定
@@ -154,7 +153,7 @@ set ambiwidth=double
 " コマンドライン補完するときに強化されたものを使う
 set wildmenu
 " コマンド補完候補をリスト表示、最長マッチ
-set wildmode=list:longest
+set wildmode=list:longest,full
 " マウスを有効にする
 if has('mouse')
   set mouse=a
@@ -226,7 +225,7 @@ if !s:iswin
 "   endif
 endif
 " スプラッシュ(起動時のメッセージ)を表示しない
-"set shortmess+=I
+"set shortmess& shortmess+=I
 " マクロ実行中などの画面再描画を行わない
 "set lazyredraw
 " 行番号表示
@@ -243,11 +242,13 @@ set ts=2 sw=2 sts=2 ex
 " インデント
 set autoindent
 set smartindent
-" Cインデントの設定
+" Cインデント
 set cindent
-set cinoptions+=:0,g0,j1
+set cinoptions& cinoptions+=:0,g0,j1
 " タイトルを表示
 set title
+set titlestring=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}\ \ %{getcwd()}
+set titlelen=200
 " タブページを常に表示
 set showtabline=2
 " タブのラベル表示設定
@@ -264,16 +265,19 @@ set wrap
 " Tab、行末の半角スペースを明示的に表示する
 set list
 "set listchars=tab:>-,trail:~,extends:>,precedes:<
+"set listchars=eol:¦,tab:»-,trail:~,extends:»,precedes:«,nbsp:%
 set listchars=tab:»-,trail:~,extends:»,precedes:«,nbsp:%
 " スクロール時に表示を5行確保
 set scrolloff=10
 " カーソルが常に中央行
 " set scrolloff=999
-" 行間設定
+" 行間
 set linespace=2
-" フォールディング設定
+" フォールディング
 set foldmethod=marker
 set foldlevel=100
+" diff
+set diffopt=filler,vertical
 " 補完選択時にScratchウィンドウを開かないようにする
 set completeopt=menuone
 " 他のバッファから補完をしない
@@ -289,7 +293,7 @@ autocmd MyAutoCmd InsertLeave * setlocal nocursorline
 autocmd MyAutoCmd InsertEnter * setlocal cursorline
 autocmd MyAutoCmd InsertEnter * highlight CursorLine cterm=underline ctermfg=NONE ctermbg=NONE gui=underline guifg=NONE guibg=NONE
 
-" ファイルタイプ毎のインデント設定
+" ファイルタイプ毎のインデント
 autocmd MyAutoCmd FileType c          setlocal sw=4 sts=4 ts=4 et
 autocmd MyAutoCmd FileType cpp        setlocal sw=4 sts=4 ts=4 et
 autocmd MyAutoCmd FileType cs         setlocal sw=4 sts=4 ts=4 et
@@ -317,17 +321,20 @@ autocmd MyAutoCmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
 autocmd MyAutoCmd FileType scala      setlocal sw=2 sts=2 ts=2 et
 
 if has('gui_running')
+  " GUIオプション
   set guioptions&
   set guioptions-=T
   set guioptions-=m
   " ビジュアル選択を自動的にクリップボードへ
   set guioptions+=a
 
+  " フォント
   if has('win32') || has('win64')
     set guifont=Ricty\ Regular\ for\ Powerline:h12
     set guifontwide=Ricty:h12
   endif
 
+  " 最大化
   autocmd MyAutoCmd GUIEnter * simalt ~x
 endif
 
@@ -345,7 +352,7 @@ let g:jellybeans_overrides = {
 \}
 colorscheme jellybeans
 
-" ボップアップのハイライトを設定
+" ボップアップのハイライト
 highlight Pmenu ctermbg=1 guibg=DarkBlue
 highlight PmenuSel ctermbg=5 guibg=DarkMagenta
 highlight PmenuSbar ctermbg=0 guibg=Black
@@ -356,7 +363,7 @@ if has('multi_byte_ime')
   highlight CursorIM guifg=NONE guibg=Purple
 endif
 
-" Javaのハイライト設定
+" Javaのハイライト
 "全てのクラスをハイライトする
 let g:java_highlight_all = 1
 "メソッド宣言文をハイライト
@@ -366,7 +373,7 @@ let g:java_highlight_debug = 1
 "余分な空白に対してハイライト
 let g:java_space_errors = 1
 
-" doxygenのハイライト設定
+" doxygenのハイライト
 let g:load_doxygen_syntax = 1
 
 " ステータスラインに文字コード等表示 "{{{
@@ -406,6 +413,11 @@ command! -bang -nargs=? Euc
 "----------------------------------------
 " キーマッピング: "{{{
 "
+
+" タイムアウト
+set timeout
+set timeoutlen=1000
+set ttimeoutlen=100
 
 " 強制全保存終了を無効化
 nnoremap ZZ <Nop>
@@ -501,17 +513,15 @@ vnoremap < <gv
 vnoremap > >gv
 
 " 選択部分をクリップボードにコピー
-vnoremap <C-C> "*y
+"vnoremap <C-C> "*y
 " 挿入モード時、クリップボードから貼り付け
-inoremap <C-V> <ESC>"*pa
+"inoremap <C-V> <ESC>"*pa
 " 選択部分をクリップボードの値に置き換え
-vnoremap <C-V> d"*P
+"vnoremap <C-V> d"*P
 " コマンドライン時、クリップボードから貼り付け
 cnoremap <C-V> <C-R>*
 " 選択部分をクリップボードに切り取り
-vnoremap <C-X> "*d<ESC>
-" 全選択
-nnoremap <C-a> ggVG
+"vnoremap <C-X> "*d<ESC>
 
 " 括弧までを消したり置換する
 " http://vim-users.jp/2011/04/hack214/
@@ -660,6 +670,15 @@ nnoremap <silent> <Space>tr :<C-u>%Trim<CR>
 vnoremap <silent> <Space>tr :<C-u>Trim<CR>
 "}}}
 
+" 縦に連番を入力する
+nnoremap <silent> <Space>co :ContinuousNumber <C-a><CR>
+vnoremap <silent> <Space>co :ContinuousNumber <C-a><CR>
+command! -count -nargs=1 ContinuousNumber
+\ let c = col('.') |
+\ for n in range(1, <count>?<count>-line('.'):1) |
+\   execute 'normal! j' . n . <q-args> |
+\   call cursor('.', c) |
+\ endfor
 "}}}
 
 "----------------------------------------
@@ -692,19 +711,19 @@ command! -bang Rb :Unite neobundle/install:<bang>
 "}}}
 
 " neocomplcache "{{{
-" neocomplcacheを有効設定
+" neocomplcache自動有効
 let g:neocomplcache_enable_at_startup = 1
 " 一時ディレクトリ
 let g:neocomplcache_temporary_dir = expand('$MY_VIM_TMPDIR/.neocon')
 " ユーザー定義スニペット保存ディレクトリ
 let g:neocomplcache_snippets_dir = expand('$MY_VIMRUNTIME/snippets')
-" smartcaseを有効設定
+" smartcaseを有効
 let g:neocomplcache_enable_smart_case = 1
-" 補完候補を自動選択設定
-let g:neocomplcache_enable_auto_select = 1
-" デリミタ自動補完設定
+" 補完候補を自動選択
+let g:neocomplcache_enable_auto_select = 0
+" デリミタ自動補完
 let g:neocomplcache_enable_auto_delimiter = 1
-" _区切りの補完を有効設定
+" _区切りの補完を有効
 let g:neocomplcache_enable_underbar_completion = 1
 " completefuncを強制上書き
 let g:neocomplcache_force_overwrite_completefunc = 1
@@ -759,13 +778,13 @@ imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>
 " <CR>: close popup and save indent.
 "inoremap <expr><CR>  neocomplcache#close_popup() . "\<CR>"
 " <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-\ <SID>check_back_space() ? "\<TAB>" :
-\ neocomplcache#start_manual_complete()
-function! s:check_back_space()"{{{
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}
+" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
+" \ <SID>check_back_space() ? "\<TAB>" :
+" \ neocomplcache#start_manual_complete()
+" function! s:check_back_space()"{{{
+"   let col = col('.') - 1
+"   return !col || getline('.')[col - 1]  =~ '\s'
+" endfunction"}}}
 "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " <C-h>, <BS>: close popup and delete backword char.
 inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
@@ -940,8 +959,8 @@ nnoremap <silent> [vimfiler]e :<C-u>VimFilerExplorer<CR>
 
 autocmd MyAutoCmd FileType vimfiler call s:vimfiler_my_settings()
 function! s:vimfiler_my_settings()"{{{
-  nmap <silent> <Space>m <Plug>(vimfiler_toggle_mark_current_line)
-  nmap <silent> <S-Space>m <Plug>(vimfiler_toggle_mark_current_line_up)
+  nmap <silent> <Space> <Plug>(vimfiler_toggle_mark_current_line)
+  nmap <silent> <S-Space> <Plug>(vimfiler_toggle_mark_current_line_up)
 endfunction"}}}
 "}}}
 
@@ -984,6 +1003,7 @@ nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 
 " vim-powerline "{{{
 let g:Powerline_symbols = 'fancy'
+let g:Powerline_stl_path_style = 'short'
 "}}}
 
 " vim-quickrun "{{{
@@ -992,7 +1012,7 @@ if !exists("g:quickrun_config")
   let g:quickrun_config={}
 endif
 
-" デフォルトの設定
+" デフォルト設定
 " 非同期で実行
 " 出力先
 " エラー : quickfix
@@ -1126,7 +1146,7 @@ nnoremap <Leader>gb :<C-u>Gblame<Enter>
 "}}}
 
 " vim-visualstar "{{{
-" 検索後に移動しない設定
+" 検索後に移動しない
 map * <Plug>(visualstar-*)N
 map # <Plug>(visualstar-#)N
 "}}}
