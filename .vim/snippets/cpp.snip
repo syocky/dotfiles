@@ -1,5 +1,9 @@
 include c.snip
 
+snippet inc_cpp
+alias   #inc_cpp, #include_cpp
+    #include <${1:iostream}>${0}
+
 snippet     template
 abbr        template <T>
     template<typename ${1:T}> 
