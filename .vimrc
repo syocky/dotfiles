@@ -48,6 +48,7 @@ NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'jceb/vim-hier'
 NeoBundle 'kana/vim-smartchr'
+NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'Lokaltog/vim-powerline'
 NeoBundle 'mattn/learn-vimscript'
 NeoBundle 'nathanaelkane/vim-indent-guides'
@@ -102,7 +103,46 @@ endif
 scriptencoding utf-8
 set fileformat=unix
 set fileformats=unix,dos,mac
-set fileencodings=ucs-bom,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,utf-8,cp932
+
+" 文字コードの自動認識
+if &encoding !=# 'utf-8'
+  set encoding=japan
+  set fileencoding=japan
+endif
+if has('iconv')
+  let s:enc_euc = 'euc-jp'
+  let s:enc_jis = 'iso-2022-jp'
+
+  " Does iconv support JIS X 0213 ?
+  if iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
+    let s:enc_euc = 'euc-jisx0213,euc-jp'
+    let s:enc_jis = 'iso-2022-jp-3'
+  endif
+
+  " Make fileencodings
+  let &fileencodings = 'ucs-bom'
+  if &encoding !=# 'utf-8'
+    let &fileencodings = &fileencodings . ',' . 'ucs-2le'
+    let &fileencodings = &fileencodings . ',' . 'ucs-2'
+  endif
+  let &fileencodings = &fileencodings . ',' . s:enc_jis
+
+  if &encoding ==# 'utf-8'
+    let &fileencodings = &fileencodings . ',' . s:enc_euc
+    let &fileencodings = &fileencodings . ',' . 'cp932'
+  elseif &encoding =~# '^euc-\%(jp\|jisx0213\)$'
+    let &encoding = s:enc_euc
+    let &fileencodings = &fileencodings . ',' . 'utf-8'
+    let &fileencodings = &fileencodings . ',' . 'cp932'
+  else  " cp932
+    let &fileencodings = &fileencodings . ',' . 'utf-8'
+    let &fileencodings = &fileencodings . ',' . s:enc_euc
+  endif
+  let &fileencodings = &fileencodings . ',' . &encoding
+
+  unlet s:enc_euc
+  unlet s:enc_jis
+endif
 
 "}}}
 
@@ -132,10 +172,8 @@ set viminfo& viminfo+=n$MY_VIM_TMPDIR/.viminfo
 set sessionoptions=blank,buffers,curdir,folds,help,localoptions,slash,tabpages
 " ビジュアルモードで選択したテキストが自動でクリッポボードに入る
 set clipboard& clipboard+=autoselect
-" 8進数を無効にする。<C-a>,<C-x>に影響する
+" 8進数を無効にする
 set nrformats-=octal
-" キーコードやマッピングされたキー列が完了するのを待つ時間(ミリ秒)
-"set timeoutlen=3500
 " 編集結果非保存のバッファから、新しいバッファを開くときに警告を出さない
 set hidden
 " ヒストリの保存数
@@ -166,7 +204,7 @@ set tags& tags+=tags
 set autoread
 " helpの検索順序
 set helplang=ja,en
-" <Leader>を, に設定
+" <Leader>を , に設定
 let mapleader=","
 
 "}}}
@@ -208,21 +246,13 @@ cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 " ハイライトを有効
 syntax enable
+
 if !s:iswin
-  "256色モード
+  " 256色モード
   set t_Co=256
-  "モードにあわせてカーソル形状変更
+  " モードにあわせてカーソル形状変更
   let &t_SI = "\<Esc>]50;CursorShape=1\x7"
   let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-"  let &t_SI = "\<Esc>]12;lightgreen\x7"
-"  let &t_EI = "\<Esc>]12;white\x7"
-"   if &term == "xterm-256color"
-"     let &t_SI .= "\eP\e[3 q\e\\"
-"     let &t_EI .= "\eP\e[1 q\e\\"
-"   elseif &term == "xterm"
-"     let &t_SI .= "\e[3 q"
-"     let &t_EI .= "\e[1 q"
-"   endif
 endif
 " スプラッシュ(起動時のメッセージ)を表示しない
 "set shortmess& shortmess+=I
@@ -245,6 +275,8 @@ set smartindent
 " Cインデント
 set cindent
 set cinoptions& cinoptions+=:0,g0,j1
+" Vimスクリプトでバックスラッシュ挿入でインデント抑止
+let g:vim_indent_cont = 0
 " タイトルを表示
 set title
 set titlestring=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}\ \ %{getcwd()}
@@ -284,8 +316,6 @@ set completeopt=menuone
 set complete=.
 " 改行でコメント自動挿入抑止
 autocmd MyAutoCmd FileType * setlocal formatoptions-=ro
-" Vimスクリプトでバックスラッシュ挿入でインデント抑止
-let g:vim_indent_cont = 0
 " 自動折り返しを無効化
 autocmd MyAutoCmd FileType * setlocal textwidth=0
 " 編集中の行に下線を引く
@@ -335,13 +365,9 @@ if has('gui_running')
   endif
 
   " 最大化
-  autocmd MyAutoCmd GUIEnter * simalt ~x
+  "autocmd MyAutoCmd GUIEnter * simalt ~x
 endif
 
-" ハイライトを有効にする
-"if &t_Co > 2 || has('gui_running')
-"  syntax on
-"endif
 " カラースキーム
 "colorscheme torte
 "colorscheme desert256
@@ -357,20 +383,20 @@ highlight Pmenu ctermbg=1 guibg=DarkBlue
 highlight PmenuSel ctermbg=5 guibg=DarkMagenta
 highlight PmenuSbar ctermbg=0 guibg=Black
 
-"IMEの状態をカラー表示
+" IMEの状態をカラー表示
 if has('multi_byte_ime')
   highlight Cursor guifg=NONE guibg=Green
   highlight CursorIM guifg=NONE guibg=Purple
 endif
 
 " Javaのハイライト
-"全てのクラスをハイライトする
+" 全てのクラスをハイライトする
 let g:java_highlight_all = 1
-"メソッド宣言文をハイライト
+" メソッド宣言文をハイライト
 let g:java_highlight_functions = 1
-"デバッグ分(print系)をハイライト
+" デバッグ分(print系)をハイライト
 let g:java_highlight_debug = 1
-"余分な空白に対してハイライト
+" 余分な空白に対してハイライト
 let g:java_space_errors = 1
 
 " doxygenのハイライト
@@ -378,13 +404,13 @@ let g:load_doxygen_syntax = 1
 
 " ステータスラインに文字コード等表示 "{{{
 " if has('iconv')
-"   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=[0x%{FencB()}]\ (%v,%l)/%L%8P\
+"   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=[0x%{s:FencB()}]\ (%v,%l)/%L%8P\
 " else
 "   set statusline=%<%f\ %m\ %r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=\ (%v,%l)/%L%8P\
 " endif
 
 " FencB() : カーソル上の文字コードをエンコードに応じた表示にする
-" function! FencB()
+" function! s:FencB()
 "   let c = matchstr(getline('.'), '.', col('.') - 1)
 "   let c = iconv(c, &enc, &fenc)
 "   return s:Byte2hex(s:Str2byte(c))
@@ -439,8 +465,8 @@ inoremap <C-p> <Up>
 inoremap <C-b> <Left>
 inoremap <C-f> <Right>
 " 分割画面
-noremap <silent> <Space>s :sp<CR>
-noremap <silent> <Space>v :vs<CR>
+noremap <silent> <Space>s :<C-u>sp<CR>
+noremap <silent> <Space>v :<C-u>vs<CR>
 nnoremap <silent> <space>wj <C-w>j
 nnoremap <silent> <space>wk <C-w>k
 nnoremap <silent> <space>wl <C-w>l
@@ -478,6 +504,8 @@ nnoremap <Esc><Esc> :<C-u>nohlsearch<CR>
 " カーソル位置の単語をヤンク文字列に置換
 nnoremap <silent> cy ce<C-r>0<ESC>:let@/=@1<CR>:noh<CR>
 nnoremap <silent> ciy ciw<C-r>0<ESC>:let@/=@1<CR>:noh<CR>
+" ビジュアルモードで選択した部分をヤンク文字列で置換
+vnoremap <silent> cy c<C-r>0<ESC>:let@/=@1<CR>:noh<CR>
 
 " コマンド履歴、検索履歴のキーマッピングを変更
 noremap qqq: <ESC>q:
@@ -506,8 +534,6 @@ let g:IMState = 0
 autocmd MyAutoCmd InsertEnter * let &iminsert = g:IMState
 autocmd MyAutoCmd InsertLeave * let g:IMState = &iminsert|set iminsert=0 imsearch=0
 
-" ビジュアルモードで選択した部分をヤンク文字列で置換
-vnoremap <silent> cy c<C-r>0<ESC>:let@/=@1<CR>:noh<CR>
 " インデント変更後も選択を継続する
 vnoremap < <gv
 vnoremap > >gv
@@ -537,6 +563,7 @@ onoremap [ t[
 " タグジャンプ
 nnoremap <C-]> g<C-]>
 nnoremap g<C-]> <C-]>
+
 "}}}
 
 "----------------------------------------
@@ -546,95 +573,83 @@ nnoremap g<C-]> <C-]>
 " 最後に編集した場所にカーソルを移動する "{{{
 autocmd MyAutoCmd BufReadPost *
 \ if line("'\"") > 1 && line("'\"") <= line('$') |
-\   exe "normal! g`\"" |
+\   execute "normal! g`\"" |
 \ endif
 "}}}
 
-" 挿入モード時、ステータスラインのカラー変更
+" 挿入モード時、ステータスラインのカラー変更 "{{{
 let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
 
 if has('syntax')
   autocmd MyAutoCmd InsertEnter * call s:StatusLine('Enter')
   autocmd MyAutoCmd InsertLeave * call s:StatusLine('Leave')
 endif
-" if has('unix') && !has('gui_running')
-"   " ESCですぐに反映されない対策
-"   inoremap <silent> <ESC> <ESC>
-" endif
+if has('unix') && !has('gui_running')
+  " ESCですぐに反映されない対策
+  inoremap <silent> <ESC> <ESC>
+endif
 
 let s:slhlcmd = ''
 function! s:StatusLine(mode) "{{{
   if a:mode == 'Enter'
     silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
-    silent exec g:hi_insert
+    silent execute g:hi_insert
   else
     highlight clear StatusLine
-    silent exec s:slhlcmd
+    silent execute s:slhlcmd
     redraw
   endif
 endfunction "}}}
 
 function! s:GetHighlight(hi) "{{{
   redir => hl
-  exec 'highlight '.a:hi
+  execute 'highlight '.a:hi
   redir END
   let hl = substitute(hl, '[\r\n]', '', 'g')
   let hl = substitute(hl, 'xxx', '', '')
   return hl
 endfunction "}}}
+"}}}
 
 " 全角スペース、行末スペースを強調表示 "{{{
-function! HighlightSpace()
+function! s:HighlightSpace()
   silent! let hi = s:GetHighlight('HighlightSpace')
   if hi =~ 'E411' || hi =~ 'cleared$'
     highlight HighlightSpace cterm=underline ctermfg=red gui=underline guifg=red
   endif
 endfunction
 if has('syntax')
-    autocmd MyAutoCmd ColorScheme       * call  HighlightSpace()
-    autocmd MyAutoCmd VimEnter,WinEnter * match HighlightSpace /　\|\s\+$/
-  call HighlightSpace()
+  autocmd MyAutoCmd ColorScheme       * call  s:HighlightSpace()
+  autocmd MyAutoCmd VimEnter,WinEnter * match HighlightSpace /　\|\s\+$/
+  call s:HighlightSpace()
 endif
 "}}}
 
 " カレントディレクトリをファイルと同じディレクトリに移動する "{{{
 "if exists('+autochdir')
-"  "autochdirがある場合カレントディレクトリを移動
+"  " autochdirがある場合カレントディレクトリを移動
 "  set autochdir
 "else
-"  "autochdirが存在しないが、カレントディレクトリを移動したい場合
-"  au BufEnter * execute ":silent! lcd " . escape(expand("%:p:h"), ' ')
+"  " autochdirが存在しないが、カレントディレクトリを移動したい場合
+"  autocmd MyAutoCmd BufEnter * execute ":silent! lcd " . escape(expand("%:p:h"), ' ')
 "endif
 "}}}
 
 " セッションを自動保存・復元する "{{{
 " セッション保存ファイルのフルパス
-"let s:last_session = expand('$HOME/.vim_last_session')
+"let s:last_session = expand('$MY_VIM_TMPDIR/.vim_last_session')
 " VIM終了時にセッション保存ファイルに上書き保存
-"au VimLeave * exe "mks! " . s:last_session
+"autocmd MyAutoCmd VimLeave * execute "mks! " . s:last_session
 " 起動時にセッションファイルがあるかどうかチェック
 "if argc() == 0 && filereadable(s:last_session)
   " あった場合読み込む
-"  au VimEnter * exe "so " . s:last_session
+"  autocmd MyAutoCmd VimEnter * execute "so " . s:last_session
 "endif
+"unlet s:last_session
 "}}}
 
 " matchitスクリプトを読み込む
 "source $MY_VIMRUNTIME/macros/matchit.vim
-
-" C/C++関数をハイライト "{{{
-" function! s:HighlightCFunction()
-"   syntax match CFunc /[A-Z_a-z]\w*\(\s*(\)\@=/
-"   highlight CFunc ctermfg=DarkCyan guifg=DarkCyan
-" endfunction
-" autocmd MyAutoCmd FileType c,cpp call HighlightCFunction()
-"autocmd MyAutoCmd FileType c,cpp syntax match CFunction /[a-zA-Z_]\w*(\@=/
-"autocmd MyAutoCmd FileType c,cpp highlight CFunction ctermfg=DarkCyan guifg=DarkCyan
-"syntax match CFunction /[a-zA-Z_]\+\w*\s*(\@=/
-" syntax match CFunction /[a-zA-Z_]\w*\s*\(\(\[[^]]*\]\s*\)\?(\s*[^\*]\)\@=/
-" syntax match CFunction /\*\s*[a-zA-Z_]\w*\s*\(\(\[\]\s*\)\?)\s*(\)\@=/
-" highlight CFunction ctermfg=DarkCyan guifg=DarkCyan
-"}}}
 
 " Quickfixウィンドウの開閉をトグル "{{{
 function! s:toggle_quickfix_window()
@@ -670,7 +685,7 @@ nnoremap <silent> <Space>tr :<C-u>%Trim<CR>
 vnoremap <silent> <Space>tr :<C-u>Trim<CR>
 "}}}
 
-" 縦に連番を入力する
+" 縦に連番を入力する "{{{
 nnoremap <silent> <Space>co :ContinuousNumber <C-a><CR>
 vnoremap <silent> <Space>co :ContinuousNumber <C-a><CR>
 command! -count -nargs=1 ContinuousNumber
@@ -679,6 +694,8 @@ command! -count -nargs=1 ContinuousNumber
 \   execute 'normal! j' . n . <q-args> |
 \   call cursor('.', c) |
 \ endfor
+"}}}
+
 "}}}
 
 "----------------------------------------
@@ -916,19 +933,19 @@ xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
 " uniteを開いている間のキーマッピング
 autocmd MyAutoCmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()"{{{
-  "ESCでuniteを終了
+  " ESCでuniteを終了
   nmap <buffer> <ESC> <Plug>(unite_exit)
-  "入力モードのときjjでノーマルモードに移動
+  " 入力モードのときjjでノーマルモードに移動
   imap <buffer> jj <Plug>(unite_insert_leave)
-  "入力モードのときctrl+wでバックスラッシュも削除
+  " 入力モードのときctrl+wでバックスラッシュも削除
   imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
-  "ctrl+jで縦に分割して開く
+  " ctrl+jで縦に分割して開く
   nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
   inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-  "ctrl+lで横に分割して開く
+  " ctrl+lで横に分割して開く
   nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
   inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-  "ctrl+oでその場所に開く
+  " ctrl+oでその場所に開く
   nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
   inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
 endfunction"}}}
@@ -999,6 +1016,11 @@ nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 "}}}
 
 " vim-fontzoom "{{{
+"}}}
+
+" vim-easymotion "{{{
+let g:EasyMotion_keys = 'hjklasdfgyuiopqwertnmzxcvbHJKLASDFGYUIOPQWERTNMZXCVB'
+let g:EasyMotion_leader_key = '<Leader>'
 "}}}
 
 " vim-powerline "{{{
