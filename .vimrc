@@ -103,46 +103,50 @@ endif
 scriptencoding utf-8
 set fileformat=unix
 set fileformats=unix,dos,mac
-
+if has('guess_encode')
+  set fileencodings=ucs-bom,iso-2022-jp,guess,euc-jp,cp932
+else
+  set fileencodings=ucs-bom,iso-2022-jp,euc-jp,cp932
+endif
 " 文字コードの自動認識
-if &encoding !=# 'utf-8'
-  set encoding=japan
-  set fileencoding=japan
-endif
-if has('iconv')
-  let s:enc_euc = 'euc-jp'
-  let s:enc_jis = 'iso-2022-jp'
-
-  " Does iconv support JIS X 0213 ?
-  if iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
-    let s:enc_euc = 'euc-jisx0213,euc-jp'
-    let s:enc_jis = 'iso-2022-jp-3'
-  endif
-
-  " Make fileencodings
-  let &fileencodings = 'ucs-bom'
-  if &encoding !=# 'utf-8'
-    let &fileencodings = &fileencodings . ',' . 'ucs-2le'
-    let &fileencodings = &fileencodings . ',' . 'ucs-2'
-  endif
-  let &fileencodings = &fileencodings . ',' . s:enc_jis
-
-  if &encoding ==# 'utf-8'
-    let &fileencodings = &fileencodings . ',' . s:enc_euc
-    let &fileencodings = &fileencodings . ',' . 'cp932'
-  elseif &encoding =~# '^euc-\%(jp\|jisx0213\)$'
-    let &encoding = s:enc_euc
-    let &fileencodings = &fileencodings . ',' . 'utf-8'
-    let &fileencodings = &fileencodings . ',' . 'cp932'
-  else  " cp932
-    let &fileencodings = &fileencodings . ',' . 'utf-8'
-    let &fileencodings = &fileencodings . ',' . s:enc_euc
-  endif
-  let &fileencodings = &fileencodings . ',' . &encoding
-
-  unlet s:enc_euc
-  unlet s:enc_jis
-endif
+" if &encoding !=# 'utf-8'
+"   set encoding=japan
+"   set fileencoding=japan
+" endif
+" if has('iconv')
+"   let s:enc_euc = 'euc-jp'
+"   let s:enc_jis = 'iso-2022-jp'
+"
+"   " Does iconv support JIS X 0213 ?
+"   if iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
+"     let s:enc_euc = 'euc-jisx0213,euc-jp'
+"     let s:enc_jis = 'iso-2022-jp-3'
+"   endif
+"
+"   " Make fileencodings
+"   let &fileencodings = 'ucs-bom'
+"   if &encoding !=# 'utf-8'
+"     let &fileencodings = &fileencodings . ',' . 'ucs-2le'
+"     let &fileencodings = &fileencodings . ',' . 'ucs-2'
+"   endif
+"   let &fileencodings = &fileencodings . ',' . s:enc_jis
+"
+"   if &encoding ==# 'utf-8'
+"     let &fileencodings = &fileencodings . ',' . s:enc_euc
+"     let &fileencodings = &fileencodings . ',' . 'cp932'
+"   elseif &encoding =~# '^euc-\%(jp\|jisx0213\)$'
+"     let &encoding = s:enc_euc
+"     let &fileencodings = &fileencodings . ',' . 'utf-8'
+"     let &fileencodings = &fileencodings . ',' . 'cp932'
+"   else  " cp932
+"     let &fileencodings = &fileencodings . ',' . 'utf-8'
+"     let &fileencodings = &fileencodings . ',' . s:enc_euc
+"   endif
+"   let &fileencodings = &fileencodings . ',' . &encoding
+"
+"   unlet s:enc_euc
+"   unlet s:enc_jis
+" endif
 
 "}}}
 
@@ -711,7 +715,7 @@ vmap <Leader>cc <Plug>(caw:I:toggle)
 
 " clang-complete "{{{
 let g:clang_auto_select = 0
-let g:clang_complete_auto = 0
+let g:clang_complete_auto = 1
 let g:clang_debug = 0
 let g:clang_use_library = 1
 let g:clang_library_path = $MY_CLANG_PATH
@@ -723,8 +727,12 @@ let g:clang_user_options =
 "}}}
 
 " neobundle "{{{
-" RbでNeoBundleの反映
-command! -bang Rb :Unite neobundle/install:<bang>
+" プラグインのアップデート
+nnoremap <silent> <Leader>bu :<C-u>Unite neobundle/update -auto-quit<CR>
+" プラグインのインストール／アップデートログ
+nnoremap <silent> <Leader>bla :<C-u>Unite neobundle/log<CR>
+" プラグインのアップデートログ
+nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
 "}}}
 
 " neocomplcache "{{{
@@ -734,12 +742,10 @@ let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_temporary_dir = expand('$MY_VIM_TMPDIR/.neocon')
 " ユーザー定義スニペット保存ディレクトリ
 let g:neocomplcache_snippets_dir = expand('$MY_VIMRUNTIME/snippets')
-" smartcaseを有効
-let g:neocomplcache_enable_smart_case = 1
-" 補完候補を自動選択
-let g:neocomplcache_enable_auto_select = 0
 " デリミタ自動補完
 let g:neocomplcache_enable_auto_delimiter = 1
+" キャメルケース方式の補完を有効
+let g:neocomplcache_enable_camel_case_completion = 1
 " _区切りの補完を有効
 let g:neocomplcache_enable_underbar_completion = 1
 " completefuncを強制上書き
@@ -755,55 +761,43 @@ autocmd MyAutoCmd FileType html,markdown setlocal omnifunc=htmlcomplete#Complete
 autocmd MyAutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd MyAutoCmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd MyAutoCmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
+if filereadable('$MY_VIMRUNTIME/plugin/eclim.vim')
+  autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
+endif
 " オムニ補完のキーワードパターン定義
 if !exists('g:neocomplcache_omni_patterns')
   let g:neocomplcache_omni_patterns = {}
 endif
 let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
-let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplcache_omni_patterns.java = '\%(\h\w*\|)\)\.'
 if !exists('g:neocomplcache_force_omni_patterns')
   let g:neocomplcache_force_omni_patterns = {}
 endif
-"let g:neocomplcache_force_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
-let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|::'
+let g:neocomplcache_force_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 " 辞書ファイルの定義
 let g:neocomplcache_dictionary_filetype_lists = {
 \ 'default'  : '',
-\ 'vimshell' : $MY_VIM_TMPDIR.'/.vimshell/command-history',
-\ 'java'     : $MY_VIMRUNTIME.'/dict/java.dict'
+\ 'vimshell' : $MY_VIM_TMPDIR.'/.vimshell/command-history'
 \ }
 " Javaのinclude補完用
 autocmd MyAutoCmd FileType java setlocal include=^import | setlocal includeexpr=substitute(v:fname,'\\.','/','g')
 " includeファイルパス
-let g:neocomplcache_include_paths = {
-\ 'java' : '.,$MY_JAVA_SRC_PATH,$MY_ANDROID_SRC_PATH'
-\ }
+" let g:neocomplcache_include_paths = {
+" \ 'java' : '.,$MY_JAVA_SRC_PATH,$MY_ANDROID_SRC_PATH'
+" \ }
+
 " キーマッピング
-imap <C-k>     <Plug>(neocomplcache_snippets_expand)
-smap <C-k>     <Plug>(neocomplcache_snippets_expand)
+" 手動でオムニ補完
+inoremap <expr><C-j> neocomplcache#manual_omni_complete()
+" 1つ前の補完を取り消す
 inoremap <expr><C-g>  neocomplcache#undo_completion()
-inoremap <expr><C-l>  neocomplcache#complete_common_string()
-
-" SuperTab like snippets behavior.
+" <Tab> でスニペット補完
 imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-"inoremap <expr><CR>  neocomplcache#close_popup() . "\<CR>"
-" <TAB>: completion.
-" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-" \ <SID>check_back_space() ? "\<TAB>" :
-" \ neocomplcache#start_manual_complete()
-" function! s:check_back_space()"{{{
-"   let col = col('.') - 1
-"   return !col || getline('.')[col - 1]  =~ '\s'
-" endfunction"}}}
-"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
+" 補完ポップアップを閉じる
 inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "\<CR>"
@@ -813,17 +807,16 @@ inoremap <expr><C-e>  neocomplcache#cancel_popup()
 "}}}
 
 " open-browser.vim "{{{
-let g:netrw_nogx = 1 " disable netrw's gx mapping.
 nmap <Leader>bs <Plug>(openbrowser-smart-search)
 vmap <Leader>bs <Plug>(openbrowser-smart-search)
 "}}}
 
 " restart.vim "{{{
 command!
-\ -bar
+\ -bang -bar
 \ RestartWithSession
 \ let g:restart_sessionoptions = &sessionoptions
-\ | Restart
+\ | Restart<bang>
 "}}}
 
 " unite "{{{
@@ -840,19 +833,8 @@ let g:unite_enable_start_insert = 1
 let g:unite_data_directory = expand('$MY_VIM_TMPDIR/.unite')
 " 最近開いたファイル履歴の保存数
 let g:unite_source_file_mru_limit = 50
-
 " file_mruの表示フォーマットを指定。空にすると表示スピードが高速化される
 let g:unite_source_file_mru_filename_format = ''
-
-" grepデフォルトオプション指定
-"let g:unite_source_grep_default_opts = '-iRHn'
-
-" For unite-session.
-" Save session automatically.
-let g:unite_source_session_enable_auto_save = 0
-let g:unite_source_session_options = &sessionoptions
-let g:unite_source_session_enable_beta_features = 1
-"autocmd MyAutoCmd VimEnter * UniteSessionLoad
 
 " キーマッピング
 " 現在開いているファイルのディレクトリ下のファイル一覧
@@ -864,15 +846,39 @@ nnoremap <silent> [unite]r :<C-u>Unite -buffer-name=register register history/ya
 " 最近使用したファイル一覧
 nnoremap <silent> [unite]m :<C-u>Unite -buffer-name=files file_mru directory_mru<CR>
 " ブックマーク一覧
-nnoremap <silent> [unite]bl :<C-u>Unite bookmark<CR>
+nnoremap <silent> [unite]bl :<C-u>Unite -buffer-name=bookmark bookmark<CR>
 " ブックマークに追加
 nnoremap <silent> [unite]ba :<C-u>UniteBookmarkAdd<CR>
-" アウトライン解析
-nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
-nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline<CR>
+" grep
+nnoremap <silent> [unite]g  :<C-u>Unite grep -buffer-name=search -no-quit<CR>
+
+" uniteを開いている間のキーマッピング
+autocmd MyAutoCmd FileType unite call s:unite_my_settings()
+function! s:unite_my_settings()"{{{
+  " unite終了
+  nmap <buffer> <C-j> <Plug>(unite_exit)
+  imap <buffer> <C-j> <Plug>(unite_exit)
+  " トグルマーク
+  nmap <buffer> @ <Plug>(unite_toggle_mark_current_candidate)
+  imap <buffer> @ <Plug>(unite_toggle_mark_current_candidate)
+  vmap <buffer> @ <Plug>(unite_toggle_mark_selected_candidates)
+  " 入力モードのときctrl+wでバックスラッシュも削除
+  imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
+endfunction"}}}
+
+" unite-session "{{{
+" Save session automatically.
+let g:unite_source_session_enable_auto_save = 0
+let g:unite_source_session_options = &sessionoptions
+let g:unite_source_session_enable_beta_features = 1
+"autocmd MyAutoCmd VimEnter * UniteSessionLoad
 " セッションロード
 "nnoremap <silent> [unite]sl :<C-u>UniteSessionLoad<CR>
-" unite-outline
+"}}}
+
+" unite-outline "{{{
+nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
+nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline<CR>
 let g:unite_source_outline_filetype_options = {
 \ '*': {
 \   'auto_update': 1,
@@ -884,21 +890,27 @@ let g:unite_source_outline_filetype_options = {
 \}
 call unite#set_buffer_name_option('outline', 'ignorecase', 1)
 call unite#set_buffer_name_option('outline', 'smartcase',  1)
-" unite-tag
+"}}}
+
+" unite-tag "{{{
 nnoremap <silent> [unite]tt  :<C-u>UniteWithCursorWord -buffer-name=tag -immediately tag<CR>
 nnoremap <silent> [unite]ti  :<C-u>UniteWithCursorWord -buffer-name=tag tag/include<CR>
 "autocmd MyAutoCmd BufEnter *
 "  \  if empty(&buftype) |
 "  \    nnoremap <buffer> <C-]> :<C-u>UniteWithCursorWord -immediately tag<CR> |
 "  \  endif
-" unite-help
+"}}}
+
+" unite-help "{{{
 nnoremap <silent> [unite]hi :<C-u>Unite -start-insert help<CR>
 nnoremap <silent> [unite]hc :<C-u>UniteWithCursorWord help<CR>
-" unite-grep
-nnoremap <silent> [unite]g  :<C-u>Unite grep -buffer-name=search -no-quit<CR>
-" unite-colorscheme
+"}}}
+
+" unite-colorscheme "{{{
 nnoremap <silent> [unite]pc :<C-u>Unite -auto-preview colorscheme<CR>
-" unite-alignta
+"}}}
+
+" unite-alignta "{{{
 let g:unite_source_alignta_preset_arguments = [
 \ ["Align at '='", '=>\='],
 \ ["Align at ':'", '01 :'],
@@ -929,26 +941,8 @@ unlet s:comment_leadings
 
 nnoremap <silent> [unite]a :<C-u>Unite alignta:options<CR>
 xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
+"}}}
 
-" uniteを開いている間のキーマッピング
-autocmd MyAutoCmd FileType unite call s:unite_my_settings()
-function! s:unite_my_settings()"{{{
-  " ESCでuniteを終了
-  nmap <buffer> <ESC> <Plug>(unite_exit)
-  " 入力モードのときjjでノーマルモードに移動
-  imap <buffer> jj <Plug>(unite_insert_leave)
-  " 入力モードのときctrl+wでバックスラッシュも削除
-  imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
-  " ctrl+jで縦に分割して開く
-  nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-  inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-  " ctrl+lで横に分割して開く
-  nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-  inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-  " ctrl+oでその場所に開く
-  nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
-  inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
-endfunction"}}}
 "}}}
 
 " vimfiler "{{{
@@ -976,8 +970,9 @@ nnoremap <silent> [vimfiler]e :<C-u>VimFilerExplorer<CR>
 
 autocmd MyAutoCmd FileType vimfiler call s:vimfiler_my_settings()
 function! s:vimfiler_my_settings()"{{{
-  nmap <silent> <Space> <Plug>(vimfiler_toggle_mark_current_line)
-  nmap <silent> <S-Space> <Plug>(vimfiler_toggle_mark_current_line_up)
+  nmap <buffer> @ <Plug>(vimfiler_toggle_mark_current_line)
+  nmap <buffer> <C-@> <Plug>(vimfiler_toggle_mark_current_line_up)
+  vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
 endfunction"}}}
 "}}}
 
@@ -1020,7 +1015,7 @@ nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 
 " vim-easymotion "{{{
 let g:EasyMotion_keys = 'hjklasdfgyuiopqwertnmzxcvbHJKLASDFGYUIOPQWERTNMZXCVB'
-let g:EasyMotion_leader_key = '<Leader>'
+let g:EasyMotion_leader_key = '<Leader>e'
 "}}}
 
 " vim-powerline "{{{
