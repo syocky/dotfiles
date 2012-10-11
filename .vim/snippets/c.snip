@@ -1,23 +1,23 @@
-snippet     if
+snippet     if2
 abbr        if () {}
     if (${1:/* condition */})
     {
         ${0:/* code */}
     }
 
-snippet else
+snippet else2
     else
     {
         ${0}
     }
 
-snippet elseif
+snippet elseif2
     else if (${1:/* condition */})
     {
         ${0}
     }
 
-snippet     ifelse
+snippet     ifelse2
 abbr        if () {} else {}
     if (${1:condition})
     {
@@ -28,21 +28,21 @@ abbr        if () {} else {}
         ${3}
     }
 
-snippet     for
+snippet     for2
 abbr        for () {}
     for (${1} = 0; $1 < ${2}; $1++)
     {
         ${0}
     }
 
-snippet     while
+snippet     while2
 abbr        while () {}
     while (${1:/* condition */})
     {
         ${0:/* code */}
     }
 
-snippet     do_while
+snippet     do_while2
 alias       do
     do
     {
@@ -50,7 +50,7 @@ alias       do
     }
     while (${1:/* condition */});
 
-snippet     switch
+snippet     switch2
 abbr        switch () {}
 	switch (${1:var})
 	{
@@ -59,7 +59,7 @@ abbr        switch () {}
 		break;
 	}
 
-snippet     function
+snippet     function2
 alias       func
 abbr        func() {}
     ${1:void} ${2:func_name}(${3})
@@ -67,7 +67,7 @@ abbr        func() {}
         ${0}
     }
 
-snippet     struct
+snippet     struct2
 abbr        struct {}
     struct ${1:name}
     {
@@ -75,13 +75,13 @@ abbr        struct {}
     };
 
 # Typedef struct
-snippet struct_typedef
+snippet struct_typedef2
     typedef struct ${1:name}
     {
         ${0:/* data */}
     };
 
-snippet     enum
+snippet     enum2
 abbr        enum {}
     enum ${1:name}
     {
@@ -89,7 +89,7 @@ abbr        enum {}
     };
 
 # main function.
-snippet main
+snippet main2
 	int main(int argc, char const* argv[])
 	{
 		${0}
