@@ -700,6 +700,19 @@ command! -count -nargs=1 ContinuousNumber
 \ endfor
 "}}}
 
+" スワップファイルの削除 "{{{
+function! s:remove_swapfile()
+  let target = &directory
+  let list = split(glob(target."**/*.*.sw{p,o}"), '\n')
+  echo "remove"
+  for file in list
+    echo file
+    call delete(file)
+  endfor
+endfunction
+command! RemoveSwapFile :<C-u>call <SID>remove_swapfile()
+"}}}
+
 "}}}
 
 "----------------------------------------
@@ -796,7 +809,8 @@ inoremap <expr><C-j> neocomplcache#manual_omni_complete()
 " 1つ前の補完を取り消す
 inoremap <expr><C-g>  neocomplcache#undo_completion()
 " <Tab> でスニペット補完
-imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ?
+\ "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 " 補完ポップアップを閉じる
 inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
@@ -957,8 +971,6 @@ let g:vimfiler_data_directory = expand('$MY_VIM_TMPDIR/.vimfiler')
 let g:vimfiler_safe_mode_by_default = 0
 " 自動cdのON/OFF
 let g:vimfiler_enable_auto_cd = 0
-" ファイル編集アクション
-"let g:vimfiler_edit_action = 'tabopen'
 if s:iswin
   " Use trashbox.
   let g:unite_kind_file_use_trashbox = 1
@@ -973,6 +985,7 @@ function! s:vimfiler_my_settings()"{{{
   nmap <buffer> @ <Plug>(vimfiler_toggle_mark_current_line)
   nmap <buffer> <C-@> <Plug>(vimfiler_toggle_mark_current_line_up)
   vmap <buffer> @ <Plug>(vimfiler_toggle_mark_selected_lines)
+  nnoremap <silent> <buffer> <expr> <C-t> vimfiler#do_action('tabopen')
 endfunction"}}}
 "}}}
 
@@ -995,18 +1008,16 @@ let g:vimshell_execute_file_list['rb'] = 'ruby'
 let g:vimshell_execute_file_list['pl'] = 'perl'
 let g:vimshell_execute_file_list['py'] = 'python'
 " キーマッピング
-noremap <silent> [vimsh]h :<C-u>VimShell<CR>
-noremap <silent> [vimsh]c :<C-u>VimShellCreate<CR>
-noremap <silent> [vimsh]t :<C-u>VimShellTab<CR>
-noremap <silent> [vimsh]p :<C-u>VimShellPop<CR>
+nnoremap <silent> [vimsh]h :<C-u>VimShell<CR>
+nnoremap <silent> [vimsh]c :<C-u>VimShellCreate<CR>
+nnoremap <silent> [vimsh]t :<C-u>VimShellTab<CR>
+nnoremap <silent> [vimsh]p :<C-u>VimShellPop<CR>
 "}}}
 
 " vim-indent-guides "{{{
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_auto_colors = 1
-"autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=DarkCyan ctermbg=DarkCyan
-"autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=DarkBlue ctermbg=DarkBlue
 nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 "}}}
 
