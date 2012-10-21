@@ -57,7 +57,7 @@ NeoBundle 'osyo-manga/vim-reanimate'
 NeoBundle 'Rip-Rip/clang_complete'
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neocomplcache-snippets-complete'
+NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/unite-session'
 NeoBundle 'Shougo/vimfiler'
@@ -753,8 +753,6 @@ nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
 let g:neocomplcache_enable_at_startup = 1
 " 一時ディレクトリ
 let g:neocomplcache_temporary_dir = expand('$MY_VIM_TMPDIR/.neocon')
-" ユーザー定義スニペット保存ディレクトリ
-let g:neocomplcache_snippets_dir = expand('$MY_VIMRUNTIME/snippets')
 " デリミタ自動補完
 let g:neocomplcache_enable_auto_delimiter = 1
 " キャメルケース方式の補完を有効
@@ -808,9 +806,6 @@ autocmd MyAutoCmd FileType java setlocal include=^import | setlocal includeexpr=
 inoremap <expr><C-j> neocomplcache#manual_omni_complete()
 " 1つ前の補完を取り消す
 inoremap <expr><C-g>  neocomplcache#undo_completion()
-" <Tab> でスニペット補完
-imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ?
-\ "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 " 補完ポップアップを閉じる
 inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
@@ -818,6 +813,17 @@ inoremap <expr><CR>  pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 inoremap <expr><C-y>  neocomplcache#close_popup()
 inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
+"}}}
+
+" neosnippet "{{{
+" ユーザー定義スニペット保存ディレクトリ
+let g:neosnippet#snippets_directory = expand('$MY_VIMRUNTIME/snippets')
+" <Tab> でスニペット補完
+imap <expr><TAB> neosnippet#expandable() ?
+\ "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+" スニペットで単語が選択されている場合でも <Tab> で次のプレースホルダへ移動する
+vmap <expr><TAB> neosnippet#expandable() ?
+\ "\<Plug>(neosnippet_jump_or_expand)" : "\<Tab>"
 "}}}
 
 " open-browser.vim "{{{
