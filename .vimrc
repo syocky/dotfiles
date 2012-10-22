@@ -369,6 +369,8 @@ if has('gui_running')
   if has('win32') || has('win64')
     set guifont=Ricty\ Regular\ for\ Powerline:h12
     set guifontwide=Ricty:h12
+  elseif has('unix')
+    set guifont=Ricty\ 12
   endif
 
   " 最大化
