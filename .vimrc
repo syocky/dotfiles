@@ -50,7 +50,6 @@ NeoBundle 'jceb/vim-hier'
 NeoBundle 'kana/vim-smartchr'
 NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'Lokaltog/vim-powerline'
-NeoBundle 'mattn/learn-vimscript'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
@@ -108,6 +107,10 @@ if has('guess_encode')
 else
   set fileencodings=ucs-bom,iso-2022-jp,euc-jp,cp932
 endif
+autocmd MyAutoCmd BufReadPost * if &modifiable && !search('[^\x00-\x7F]', 'cnw')
+\ | setlocal fileencoding=
+\ | endif
+
 " 文字コードの自動認識
 " if &encoding !=# 'utf-8'
 "   set encoding=japan
