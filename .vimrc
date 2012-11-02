@@ -44,6 +44,7 @@ endif
 
 " プラグイン群
 NeoBundle 'dannyob/quickfixstatus'
+NeoBundle 'glidenote/memolist.vim'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'jceb/vim-hier'
@@ -64,9 +65,11 @@ NeoBundle 'Shougo/vimproc'
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vinarise'
 NeoBundle 'sgur/unite-qf'
+NeoBundle 'syocky/vim-powerline-syocky'
 NeoBundle 'thinca/vim-fontzoom'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'thinca/vim-logcat'
+NeoBundle 'thinca/vim-qfreplace'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-unite-history'
@@ -94,11 +97,12 @@ filetype plugin indent on
 "
 
 set encoding=utf-8
-if s:iswin
-  set termencoding=cp932
-else
-  set termencoding=utf-8
-endif
+" if s:iswin
+"   set termencoding=cp932
+" else
+"   set termencoding=utf-8
+" endif
+set termencoding=utf-8
 scriptencoding utf-8
 set fileformat=unix
 set fileformats=unix,dos,mac
@@ -233,8 +237,8 @@ set hlsearch
 " w,bの移動で認識する文字
 "set iskeyword=a-z,A-Z,48-57,_,.,-,>
 "vimgrep をデフォルトのgrepとする場合internal
-"set grepprg=internal
-set grepprg=grep\ -nH
+set grepprg=internal
+"set grepprg=grep\ -nH
 " vimgrepでの検索後、QuickFixウィンドウを開く
 autocmd MyAutoCmd QuickfixCmdPost vimgrep cw
 " 検索で飛んだらそこを真ん中に
@@ -251,15 +255,12 @@ cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 " 表示設定: "{{{
 "
 
-" ハイライトを有効
-syntax enable
-
 if !s:iswin
   " 256色モード
   set t_Co=256
   " モードにあわせてカーソル形状変更
-  let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-  let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+  let &t_SI = "\e]50;CursorShape=1\x7"
+  let &t_EI = "\e]50;CursorShape=0\x7"
 endif
 " スプラッシュ(起動時のメッセージ)を表示しない
 "set shortmess& shortmess+=I
@@ -354,7 +355,7 @@ autocmd MyAutoCmd FileType wsh        setlocal sw=4 sts=4 ts=4 et
 autocmd MyAutoCmd FileType xhtml      setlocal sw=2 sts=2 ts=2 et
 autocmd MyAutoCmd FileType xml        setlocal sw=2 sts=2 ts=2 et
 autocmd MyAutoCmd FileType yaml       setlocal sw=2 sts=2 ts=2 et
-autocmd MyAutoCmd FileType zsh        setlocal sw=4 sts=4 ts=4 et
+autocmd MyAutoCmd FileType zsh        setlocal sw=2 sts=2 ts=2 et
 autocmd MyAutoCmd FileType scala      setlocal sw=2 sts=2 ts=2 et
 
 if has('gui_running')
@@ -374,7 +375,11 @@ if has('gui_running')
   endif
 
   " 最大化
-  "autocmd MyAutoCmd GUIEnter * simalt ~x
+  autocmd MyAutoCmd GUIEnter * simalt ~x
+
+  " 半透明化
+  " gui
+  " set transparency=240
 endif
 
 " カラースキーム
@@ -387,10 +392,14 @@ let g:jellybeans_overrides = {
 \}
 colorscheme jellybeans
 
+" ハイライトを有効
+syntax enable
+
 " ボップアップのハイライト
-highlight Pmenu ctermbg=1 guibg=DarkBlue
-highlight PmenuSel ctermbg=5 guibg=DarkMagenta
-highlight PmenuSbar ctermbg=0 guibg=Black
+highlight Pmenu ctermbg=18 guibg=DarkBlue
+highlight PmenuSel ctermbg=18 ctermfg=1 guibg=DarkBlue guifg=Red
+highlight PmenuSbar ctermbg=7 guibg=LightGray
+highlight PmenuThumb ctermbg=22 guibg=DarkGreen
 
 " IMEの状態をカラー表示
 if has('multi_byte_ime')
@@ -677,7 +686,7 @@ function! s:toggle_clipboard_unnamed()
     set clipboard-=unnamed
     echo 'clipboard mode OFF'
   else
-    set clipboard+=unnamed
+    set clipboard^=unnamed
     echo 'clipboard mode ON'
   endif
 endfunction
@@ -718,6 +727,13 @@ endfunction
 command! RemoveSwapFile :<C-u>call <SID>remove_swapfile()
 "}}}
 
+" http://vim-users.jp/2010/03/hack130/ "{{{
+command! -complete=file -nargs=+ VimGrep  call s:grep([<f-args>])
+function! s:grep(args)
+  execute 'vimgrep' '/'.a:args[-1].'/' join(a:args[:-2]) | :Unite qf
+endfunction
+"}}}
+
 "}}}
 
 "----------------------------------------
@@ -733,7 +749,7 @@ vmap <Leader>cc <Plug>(caw:I:toggle)
 
 " clang-complete "{{{
 let g:clang_auto_select = 0
-let g:clang_complete_auto = 1
+let g:clang_complete_auto = 0
 let g:clang_debug = 0
 let g:clang_use_library = 1
 let g:clang_library_path = $MY_CLANG_PATH
@@ -742,6 +758,15 @@ let g:clang_user_options =
 \ '-fms-extensions -fgnu-runtime '.
 \ '-include malloc.h '.
 \ '-std=gnu++0x '
+"}}}
+
+" memolist "{{{
+let g:memolist_path = expand('$MY_VIM_TMPDIR/.memolist')
+map <Leader>mn :<C-u>MemoNew<CR>
+map <Leader>ml :<C-u>MemoList<CR>
+map <Leader>mg :<C-u>MemoGrep<CR>
+nnoremap <silent> <Leader>mul :<C-u>Unite -buffer-name=files file:<C-r>=g:memolist_path."/"<CR><CR>
+nnoremap <silent> <Leader>mug :<C-u>Unite -buffer-name=search grep:<C-r>=substitute(g:memolist_path, ":", "\\\\:", "g")<CR><CR>
 "}}}
 
 " neobundle "{{{
@@ -777,7 +802,7 @@ autocmd MyAutoCmd FileType html,markdown setlocal omnifunc=htmlcomplete#Complete
 autocmd MyAutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd MyAutoCmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd MyAutoCmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-if filereadable('$MY_VIMRUNTIME/plugin/eclim.vim')
+if filereadable(expand('$MY_VIMRUNTIME/plugin/eclim.vim'))
   autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
 endif
 " オムニ補完のキーワードパターン定義
@@ -789,11 +814,6 @@ let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplcache_omni_patterns.java = '\%(\h\w*\|)\)\.'
-if !exists('g:neocomplcache_force_omni_patterns')
-  let g:neocomplcache_force_omni_patterns = {}
-endif
-let g:neocomplcache_force_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 " 辞書ファイルの定義
 let g:neocomplcache_dictionary_filetype_lists = {
 \ 'default'  : '',
@@ -875,7 +895,7 @@ nnoremap <silent> [unite]bl :<C-u>Unite -buffer-name=bookmark bookmark<CR>
 " ブックマークに追加
 nnoremap <silent> [unite]ba :<C-u>UniteBookmarkAdd<CR>
 " grep
-nnoremap <silent> [unite]g  :<C-u>Unite grep -buffer-name=search -no-quit<CR>
+nnoremap <silent> [unite]gr :<C-u>Unite -buffer-name=search -no-quit grep<CR>
 
 " uniteを開いている間のキーマッピング
 autocmd MyAutoCmd FileType unite call s:unite_my_settings()
@@ -1029,6 +1049,11 @@ nnoremap <silent> [vimsh]p :<C-u>VimShellPop<CR>
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_guide_size = 1
 let g:indent_guides_auto_colors = 1
+if !has('gui_running')
+  let g:indent_guides_auto_colors = 0
+  autocmd MyAutoCmd VimEnter,ColorScheme * highlight IndentGuidesOdd   ctermbg=0
+  autocmd MyAutoCmd VimEnter,ColorScheme * highlight IndentGuidesEvent ctermbg=8
+endif
 nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 "}}}
 
@@ -1041,8 +1066,11 @@ let g:EasyMotion_leader_key = '<Leader>e'
 "}}}
 
 " vim-powerline "{{{
+let g:Powerline_theme = 'syocky'
+let g:Powerline_colorscheme = 'syocky'
 let g:Powerline_symbols = 'fancy'
 let g:Powerline_stl_path_style = 'short'
+let g:Powerline_cache_dir = expand('$MY_VIM_TMPDIR/.powerline')
 "}}}
 
 " vim-quickrun "{{{
@@ -1159,16 +1187,23 @@ let g:ref_use_vimproc = 1
 
 " vim-smartchr "{{{
 function! EnableSmartchrBasic()
-"  inoremap <buffer><expr> + smartchr#one_of(' + ', '+', '++')
-"  inoremap <buffer><expr> & smartchr#one_of(' & ', ' && ', '&')
+  inoremap <buffer><expr> + smartchr#one_of(' + ', '+', '++')
+  inoremap <buffer><expr> & smartchr#one_of(' & ', ' && ', '&')
   inoremap <buffer><expr> , smartchr#one_of(', ', ',')
-"  inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
+  inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
   inoremap <expr> = search('\(&\<bar><bar>\<bar>+\<bar>-\<bar>/\<bar>>\<bar><\) \%#', 'bcn')? '<bs>= '
   \ : search('\(\*\<bar>!\)\%#')? '= '
   \ : smartchr#one_of(' = ', ' == ', '=')
 endfunction
+
+function! EnableSmartchrRegExp()
+  inoremap <buffer><expr> ~ search('\(!\<bar>=\) \%#', 'bcn')? '<bs>~ ' : '~'
+endfunction
+
 autocmd MyAutoCmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
 autocmd MyAutoCmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
+autocmd MyAutoCmd FileType python,ruby,vim call EnableSmartchrRegExp()
+autocmd MyAutoCmd FileType ruby inoremap <buffer> <expr> > smartchr#one_of('>', ' => ')
 "}}}
 
 " vim-fugitive "{{{
