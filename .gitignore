@@ -18,3 +18,4 @@
 /.vim/bundle
 /.vim/eclim
 /.vim/plugin/eclim.vim
+/.vim/plugin/rsense.vim
