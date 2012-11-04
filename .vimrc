@@ -51,6 +51,7 @@ NeoBundle 'jceb/vim-hier'
 NeoBundle 'kana/vim-smartchr'
 NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'Lokaltog/vim-powerline'
+NeoBundle 'mattn/zencoding-vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
@@ -61,7 +62,12 @@ NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/unite-session'
 NeoBundle 'Shougo/vimfiler'
-NeoBundle 'Shougo/vimproc'
+NeoBundle 'Shougo/vimproc', {
+\ 'build' : {
+\   'Windows' : 'make -f make_mingw32.mak',
+\   'unix'    : 'make -f make_unix.mak',
+\   },
+\ }
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'Shougo/vinarise'
 NeoBundle 'sgur/unite-qf'
@@ -75,6 +81,7 @@ NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'tpope/vim-rails'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tyru/caw.vim'
 NeoBundle 'tyru/open-browser.vim'
@@ -83,6 +90,7 @@ NeoBundle 'tsukkee/unite-help'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'vim-jp/cpp-vim'
+NeoBundle 'vim-scripts/dbext.vim'
 NeoBundle 'vim-scripts/DirDiff.vim'
 NeoBundle 'vim-scripts/DoxygenToolkit.vim'
 NeoBundle 'vim-scripts/taglist.vim'
@@ -760,6 +768,9 @@ let g:clang_user_options =
 \ '-std=gnu++0x '
 "}}}
 
+" dbext.vim "{{{
+"}}}
+
 " memolist "{{{
 let g:memolist_path = expand('$MY_VIM_TMPDIR/.memolist')
 map <Leader>mn :<C-u>MemoNew<CR>
@@ -809,7 +820,9 @@ endif
 if !exists('g:neocomplcache_omni_patterns')
   let g:neocomplcache_omni_patterns = {}
 endif
-let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+if !exists('g:neocomplcache_force_omni_patterns')
+  let g:neocomplcache_force_omni_patterns = {}
+endif
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
@@ -856,12 +869,23 @@ nmap <Leader>bs <Plug>(openbrowser-smart-search)
 vmap <Leader>bs <Plug>(openbrowser-smart-search)
 "}}}
 
+" rails.vim "{{{
+"}}}
+
 " restart.vim "{{{
 command!
 \ -bang -bar
 \ RestartWithSession
 \ let g:restart_sessionoptions = &sessionoptions
 \ | Restart<bang>
+"}}}
+
+" rsense "{{{
+if filereadable(expand($RSENSE_HOME . '/bin/rsense'))
+  let g:rsenseHome = $RSENSE_HOME
+  let g:rsenseUseOmniFunc = 1
+  let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+endif
 "}}}
 
 " unite "{{{
@@ -1229,6 +1253,13 @@ map # <Plug>(visualstar-#)N
 " 現在編集中のソースのタグしか表示しない
 let Tlist_Show_One_File = 1
 nnoremap <Leader>tl :<C-u>TlistToggle<CR>
+"}}}
+
+" zencoding-vim "{{{
+let g:user_zen_leader_key = '<C-k>'
+let g:user_zen_settings = {
+\  'lang' : 'ja',
+\}
 "}}}
 
 "}}}
