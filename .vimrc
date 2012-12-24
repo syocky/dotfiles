@@ -55,12 +55,12 @@ NeoBundle 'mattn/zencoding-vim'
 NeoBundle 'nathanaelkane/vim-indent-guides'
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
-NeoBundle 'Rip-Rip/clang_complete'
+NeoBundleLazy 'Rip-Rip/clang_complete'
+autocmd MyAutoCmd FileType c,cpp NeoBundleSource clang_complete
 NeoBundle 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/unite-session'
 NeoBundle 'Shougo/vimfiler'
 NeoBundle 'Shougo/vimproc', {
 \ 'build' : {
@@ -74,14 +74,12 @@ NeoBundle 'sgur/unite-qf'
 NeoBundle 'syocky/vim-powerline-syocky'
 NeoBundle 'thinca/vim-fontzoom'
 NeoBundle 'thinca/vim-localrc'
-NeoBundle 'thinca/vim-logcat'
 NeoBundle 'thinca/vim-qfreplace'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'tpope/vim-rails'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'tyru/caw.vim'
 NeoBundle 'tyru/open-browser.vim'
@@ -90,7 +88,6 @@ NeoBundle 'tsukkee/unite-help'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'vim-jp/cpp-vim'
-NeoBundle 'vim-scripts/dbext.vim'
 NeoBundle 'vim-scripts/DirDiff.vim'
 NeoBundle 'vim-scripts/DoxygenToolkit.vim'
 NeoBundle 'vim-scripts/taglist.vim'
@@ -768,9 +765,6 @@ let g:clang_user_options =
 \ '-std=gnu++0x '
 "}}}
 
-" dbext.vim "{{{
-"}}}
-
 " memolist "{{{
 let g:memolist_path = expand('$MY_VIM_TMPDIR/.memolist')
 map <Leader>mn :<C-u>MemoNew<CR>
@@ -869,9 +863,6 @@ nmap <Leader>bs <Plug>(openbrowser-smart-search)
 vmap <Leader>bs <Plug>(openbrowser-smart-search)
 "}}}
 
-" rails.vim "{{{
-"}}}
-
 " restart.vim "{{{
 command!
 \ -bang -bar
@@ -934,16 +925,6 @@ function! s:unite_my_settings()"{{{
   " 入力モードのときctrl+wでバックスラッシュも削除
   imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
 endfunction"}}}
-
-" unite-session "{{{
-" Save session automatically.
-let g:unite_source_session_enable_auto_save = 0
-let g:unite_source_session_options = &sessionoptions
-let g:unite_source_session_enable_beta_features = 1
-"autocmd MyAutoCmd VimEnter * UniteSessionLoad
-" セッションロード
-"nnoremap <silent> [unite]sl :<C-u>UniteSessionLoad<CR>
-"}}}
 
 " unite-outline "{{{
 nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
