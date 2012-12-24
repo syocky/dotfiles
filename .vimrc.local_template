@@ -1,0 +1,14 @@
+" clangのパス
+let $MY_CLANG_PATH = ''
+
+" boostのパス
+let $MY_BOOST_PATH = ''
+
+" ログファイルのハイライト設定
+" TODO
+
+" ログファイルのフィルタリング設定
+nnoremap <silent> [unite]ld :<C-u>Unite -buffer-name=log line -input=\|\ DEBUG\ \| -no-quit<CR>
+nnoremap <silent> [unite]li :<C-u>Unite -buffer-name=log line -input=\|\ INFO\ \| -no-quit<CR>
+nnoremap <silent> [unite]lw :<C-u>Unite -buffer-name=log line -input=\|\ WARN\ \| -no-quit<CR>
+nnoremap <silent> [unite]le :<C-u>Unite -buffer-name=log line -input=\|\ ERROR\ \| -no-quit<CR>
