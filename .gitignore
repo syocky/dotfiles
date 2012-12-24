@@ -6,6 +6,7 @@
 # しかし、"無視したくないファイル"は以下に"![ファイル名]"で指定する。
 ##### Gitで管理するファイルリスト #####
 !/.vimrc
+!/.vimrc.local_template
 !/.gvimrc
 !/.zshrc
 !/.zshenv
