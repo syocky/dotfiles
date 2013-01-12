@@ -48,18 +48,44 @@ NeoBundle 'glidenote/memolist.vim'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'jceb/vim-hier'
-NeoBundle 'kana/vim-smartchr'
+NeoBundleLazy 'kana/vim-smartchr', {
+\ 'autoload' : {
+\   'insert' : 1,
+\   },
+\ }
 NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'Lokaltog/vim-powerline'
-NeoBundle 'mattn/zencoding-vim'
-NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundleLazy 'mattn/zencoding-vim', {
+\ 'autoload' : {
+\   'insert' : 1,
+\   },
+\ }
+NeoBundleLazy 'nathanaelkane/vim-indent-guides', {
+\ 'autoload' : {
+\   'commands' : [
+\     'IndentGuidesToggle',
+\     'IndentGuidesEnable',
+\     'IndentGuidesDisable']
+\   },
+\ }
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
-NeoBundleLazy 'Rip-Rip/clang_complete'
-autocmd MyAutoCmd FileType c,cpp NeoBundleSource clang_complete
+NeoBundleLazy 'Rip-Rip/clang_complete', {
+\ 'autoload' : {
+\   'filetypes' : ['c', 'cpp'],
+\   },
+\ }
 NeoBundle 'Shougo/neobundle.vim'
-NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neosnippet'
+NeoBundleLazy 'Shougo/neocomplcache', {
+\ 'autoload' : {
+\   'insert' : 1,
+\   },
+\ }
+NeoBundleLazy 'Shougo/neosnippet', {
+\ 'autoload' : {
+\   'insert' : 1,
+\   },
+\ }
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/vimfiler'
 NeoBundle 'Shougo/vimproc', {
@@ -69,28 +95,72 @@ NeoBundle 'Shougo/vimproc', {
 \   },
 \ }
 NeoBundle 'Shougo/vimshell'
-NeoBundle 'Shougo/vinarise'
+NeoBundleLazy 'Shougo/vinarise', {
+\ 'autoload' : {
+\   'commands' : 'Vinarise',
+\   },
+\ }
 NeoBundle 'sgur/unite-qf'
 NeoBundle 'syocky/vim-powerline-syocky'
-NeoBundle 'thinca/vim-fontzoom'
+NeoBundleLazy 'thinca/vim-fontzoom', {
+\ 'autoload' : {
+\   'mappings' : [
+\     ['n', '<Plug>(fontzoom-larger)'],
+\     ['n', '<Plug>(fontzoom-smaller)']]
+\   },
+\ }
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'thinca/vim-qfreplace'
 NeoBundle 'thinca/vim-quickrun'
-NeoBundle 'thinca/vim-ref'
+NeoBundleLazy 'thinca/vim-ref', {
+\ 'autoload' : {
+\   'commands' : 'Ref',
+\   },
+\ }
 NeoBundle 'thinca/vim-unite-history'
 NeoBundle 'thinca/vim-visualstar'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'tpope/vim-surround'
-NeoBundle 'tyru/caw.vim'
-NeoBundle 'tyru/open-browser.vim'
-NeoBundle 'tyru/restart.vim'
+NeoBundleLazy 'tyru/caw.vim', {
+\ 'autoload' : {
+\   'mappings' : [
+\     '<Plug>(caw:prefix)',
+\     '<Plug>(caw:i:toggle)']
+\   },
+\ }
+NeoBundleLazy 'tyru/open-browser.vim', {
+\ 'autoload' : {
+\   'mappings' : '<Plug>(open-browser-wwwsearch)',
+\   },
+\ }
+NeoBundleLazy 'tyru/restart.vim', {
+\ 'autoload' : {
+\   'commands' : 'Restart',
+\   },
+\ }
 NeoBundle 'tsukkee/unite-help'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'ujihisa/unite-colorscheme'
-NeoBundle 'vim-jp/cpp-vim'
-NeoBundle 'vim-scripts/DirDiff.vim'
-NeoBundle 'vim-scripts/DoxygenToolkit.vim'
-NeoBundle 'vim-scripts/taglist.vim'
+NeoBundleLazy 'vim-jp/cpp-vim', {
+\ 'autoload' : {
+\   'filetypes' : ['c', 'cpp'],
+\   },
+\ }
+NeoBundleLazy 'vim-scripts/DirDiff.vim', {
+\ 'autoload' : {
+\   'commands' : 'DirDiff',
+\   },
+\ }
+NeoBundleLazy 'vim-scripts/DoxygenToolkit.vim', {
+\ 'autoload' : {
+\   'commands' : 'Dox',
+\   },
+\ }
+NeoBundleLazy 'vim-scripts/taglist.vim', {
+\ 'autoload' : {
+\   'commands' : 'TlistToggle',
+\   },
+\ }
 NeoBundle 'zhaocai/unite-scriptnames'
 
 filetype plugin indent on
@@ -938,8 +1008,8 @@ let g:unite_source_outline_filetype_options = {
 \   'auto_update': 0,
 \ },
 \}
-call unite#set_buffer_name_option('outline', 'ignorecase', 1)
-call unite#set_buffer_name_option('outline', 'smartcase',  1)
+autocmd MyAutoCmd FileType unite call unite#set_profile('outline', 'ignorecase', 1)
+autocmd MyAutoCmd FileType unite call unite#set_profile('outline', 'smartcase',  1)
 "}}}
 
 " unite-tag "{{{
@@ -1011,8 +1081,6 @@ if s:iswin
   " Use trashbox.
   let g:unite_kind_file_use_trashbox = 1
 endif
-" ファイル関連付け
-call vimfiler#set_execute_file('txt', 'vim')
 " キーマッピング
 nnoremap <silent> [vimfiler]e :<C-u>VimFilerExplorer<CR>
 
@@ -1039,7 +1107,9 @@ let g:vimshell_temporary_directory = expand('$MY_VIM_TMPDIR/.vimshell')
 let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 " Initialize execute file list.
 let g:vimshell_execute_file_list = {}
-call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
+for ext in split('txt,vim,c,h,cpp,xml,java', ',')
+  let g:vimshell_execute_file_list[ext] = 'vim'
+endfor
 let g:vimshell_execute_file_list['rb'] = 'ruby'
 let g:vimshell_execute_file_list['pl'] = 'perl'
 let g:vimshell_execute_file_list['py'] = 'python'
@@ -1234,6 +1304,10 @@ map # <Plug>(visualstar-#)N
 " 現在編集中のソースのタグしか表示しない
 let Tlist_Show_One_File = 1
 nnoremap <Leader>tl :<C-u>TlistToggle<CR>
+"}}}
+
+" vinarise "{{{
+let g:vinarise_enable_auto_detect = 1
 "}}}
 
 " zencoding-vim "{{{
