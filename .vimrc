@@ -47,6 +47,7 @@ NeoBundle 'dannyob/quickfixstatus'
 NeoBundle 'glidenote/memolist.vim'
 NeoBundle 'h1mesuke/vim-alignta'
 NeoBundle 'h1mesuke/unite-outline'
+NeoBundle 'itchyny/landscape.vim'
 NeoBundle 'jceb/vim-hier'
 NeoBundleLazy 'kana/vim-smartchr', {
 \ 'autoload' : {
@@ -381,7 +382,7 @@ set wrap
 set list
 "set listchars=tab:>-,trail:~,extends:>,precedes:<
 "set listchars=eol:¦,tab:»-,trail:~,extends:»,precedes:«,nbsp:%
-set listchars=tab:»-,trail:~,extends:»,precedes:«,nbsp:%
+set listchars=tab:▸\ ,trail:~,extends:»,precedes:«,nbsp:%
 " スクロール時に表示を5行確保
 set scrolloff=10
 " カーソルが常に中央行
@@ -465,7 +466,8 @@ endif
 let g:jellybeans_overrides = {
 \ 'Comment' : { 'gui' : 'NONE' }
 \}
-colorscheme jellybeans
+"colorscheme jellybeans
+colorscheme landscape
 
 " ハイライトを有効
 syntax enable
@@ -835,6 +837,12 @@ let g:clang_user_options =
 \ '-std=gnu++0x '
 "}}}
 
+" landscape "{{{
+let g:landscape_highlight_url = 1
+let g:landscape_highlight_todo = 1
+let g:landscape_highlight_full_space = 1
+"}}}
+
 " memolist "{{{
 let g:memolist_path = expand('$MY_VIM_TMPDIR/.memolist')
 map <Leader>mn :<C-u>MemoNew<CR>
@@ -850,7 +858,7 @@ nnoremap <silent> <Leader>bu :<C-u>Unite neobundle/update -auto-quit<CR>
 " プラグインのインストール／アップデートログ
 nnoremap <silent> <Leader>bla :<C-u>Unite neobundle/log<CR>
 " プラグインのアップデートログ
-nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
+nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
 "}}}
 
 " neocomplcache "{{{
