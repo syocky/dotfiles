@@ -121,31 +121,31 @@ NeoBundle 'h1mesuke/unite-outline' "{{{
   autocmd MyAutoCmd FileType unite call unite#set_profile('outline', 'smartcase',  1)
 "}}}
 NeoBundle 'jceb/vim-hier'
-NeoBundleLazy 'kana/vim-smartchr', "{{{
-              \ {
-              \   'autoload' : {
-              \       'insert' : 1,
-              \   }
-              \ }
-
-  function! EnableSmartchrBasic()
-    inoremap <buffer><expr> + smartchr#one_of(' + ', '+', '++')
-    inoremap <buffer><expr> & smartchr#one_of(' & ', ' && ', '&')
-    inoremap <buffer><expr> , smartchr#one_of(', ', ',')
-    inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
-    inoremap <expr> = search('\(&\<bar><bar>\<bar>+\<bar>-\<bar>/\<bar>>\<bar><\) \%#', 'bcn')? '<bs>= '
-    \ : search('\(\*\<bar>!\)\%#')? '= '
-    \ : smartchr#one_of(' = ', '=', ' == ')
-  endfunction
-
-  function! EnableSmartchrRegExp()
-    inoremap <buffer><expr> ~ search('\(!\<bar>=\) \%#', 'bcn')? '<bs>~ ' : '~'
-  endfunction
-
-  autocmd MyAutoCmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
-  autocmd MyAutoCmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
-  autocmd MyAutoCmd FileType python,ruby,vim call EnableSmartchrRegExp()
-  autocmd MyAutoCmd FileType ruby inoremap <buffer> <expr> > smartchr#one_of('>', ' => ')
+" NeoBundleLazy 'kana/vim-smartchr', "{{{
+"               \ {
+"               \   'autoload' : {
+"               \       'insert' : 1,
+"               \   }
+"               \ }
+"
+"   function! EnableSmartchrBasic()
+"     inoremap <buffer><expr> + smartchr#one_of(' + ', '+', '++')
+"     inoremap <buffer><expr> & smartchr#one_of(' & ', ' && ', '&')
+"     inoremap <buffer><expr> , smartchr#one_of(', ', ',')
+"     inoremap <buffer><expr> <Bar> smartchr#one_of('<Bar>', ' <Bar><Bar> ', '<Bar>')
+"     inoremap <expr> = search('\(&\<bar><bar>\<bar>+\<bar>-\<bar>/\<bar>>\<bar><\) \%#', 'bcn')? '<bs>= '
+"     \ : search('\(\*\<bar>!\)\%#')? '= '
+"     \ : smartchr#one_of(' = ', '=', ' == ')
+"   endfunction
+"
+"   function! EnableSmartchrRegExp()
+"     inoremap <buffer><expr> ~ search('\(!\<bar>=\) \%#', 'bcn')? '<bs>~ ' : '~'
+"   endfunction
+"
+"   autocmd MyAutoCmd FileType c,cpp,php,python,java,javascript,ruby,vim call EnableSmartchrBasic()
+"   autocmd MyAutoCmd FileType c,cpp inoremap <buffer> <expr> . smartchr#loop('.', '->', '...')
+"   autocmd MyAutoCmd FileType python,ruby,vim call EnableSmartchrRegExp()
+"   autocmd MyAutoCmd FileType ruby inoremap <buffer> <expr> > smartchr#one_of('>', ' => ')
 "}}}
 NeoBundle 'kana/vim-submode' "{{{
   call submode#enter_with('winsize', 'n', '', '<Space>w>', '<C-w>>')
@@ -1275,8 +1275,7 @@ endfunction
 
 "}}}
 
-"----------------------------------------
-" その他プラグイン設定: "{{{
+" プラグイン設定 {{{ ===========================================================
 
 " rsense "{{{
 if filereadable(expand($RSENSE_HOME . '/bin/rsense'))
