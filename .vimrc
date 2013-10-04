@@ -303,12 +303,7 @@ NeoBundle 'Shougo/neobundle.vim' "{{{
   " プラグインのアップデートログ
   nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
 "}}}
-NeoBundleLazy 'Shougo/neocomplete.vim', "{{{
-              \ {
-              \   'autoload' : {
-              \     'insert' : 1,
-              \   }
-              \ }
+NeoBundle 'Shougo/neocomplete.vim' "{{{
 
   " 自動有効
   let g:neocomplete#enable_at_startup = 1
@@ -318,10 +313,10 @@ NeoBundleLazy 'Shougo/neocomplete.vim', "{{{
   let g:neocomplete#enable_auto_delimiter = 1
   " スマートケース方式の補完を有効
   let g:neocomplete#enable_smart_case = 1
-  " _区切りの補完を有効
+  " 区切り補完を有効
   let g:neocomplete#enable_auto_delimiter = 1
   " completefuncを強制上書き
-  let g:neocomplete_force_overwrite_completefunc = 1
+  let g:neocomplete#force_overwrite_completefunc = 1
   " キーワードパターン定義
   if !exists('g:neocomplete_keyword_patterns')
     let g:neocomplete_keyword_patterns = {}
@@ -358,7 +353,13 @@ NeoBundleLazy 'Shougo/neocomplete.vim', "{{{
 
   " キーマッピング
   " 手動でオムニ補完
-  inoremap <expr><Tab>  neocomplete#start_manual_complete()
+  inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ neocomplete#start_manual_complete()
+  function! s:check_back_space() "{{{
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1] =~ '\s'
+  endfunction"}}}
   " 1つ前の補完を取り消す
   inoremap <expr><C-g>  neocomplete#undo_completion()
   " 補完ポップアップを閉じる
