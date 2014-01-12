@@ -133,6 +133,12 @@ NeoBundleLazy 'Shougo/neosnippet',
               \     'insert' : 1,
               \   }
               \ }
+NeoBundleLazy 'Shougo/neosnippet-snippets',
+              \ {
+              \   'autoload' : {
+              \     'insert' : 1,
+              \   }
+              \ }
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/vimfiler'
 NeoBundle 'Shougo/vimproc',
