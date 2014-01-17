@@ -669,37 +669,37 @@ autocmd MyAutoCmd BufReadPost *
 " }}}
 
 " 挿入モード時、ステータスラインのカラー変更 {{{
-let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
-
-if has('syntax')
-  autocmd MyAutoCmd InsertEnter * call s:StatusLine('Enter')
-  autocmd MyAutoCmd InsertLeave * call s:StatusLine('Leave')
-endif
-if has('unix') && !has('gui_running')
-  " ESCですぐに反映されない対策
-  inoremap <silent> <ESC> <ESC>
-endif
-
-let s:slhlcmd = ''
-function! s:StatusLine(mode)
-  if a:mode == 'Enter'
-    silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
-    silent execute g:hi_insert
-  else
-    highlight clear StatusLine
-    silent execute s:slhlcmd
-    redraw
-  endif
-endfunction
-
-function! s:GetHighlight(hi)
-  redir => hl
-  execute 'highlight '.a:hi
-  redir END
-  let hl = substitute(hl, '[\r\n]', '', 'g')
-  let hl = substitute(hl, 'xxx', '', '')
-  return hl
-endfunction
+" let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
+"
+" if has('syntax')
+"   autocmd MyAutoCmd InsertEnter * call s:StatusLine('Enter')
+"   autocmd MyAutoCmd InsertLeave * call s:StatusLine('Leave')
+" endif
+" if has('unix') && !has('gui_running')
+"   " ESCですぐに反映されない対策
+"   inoremap <silent> <ESC> <ESC>
+" endif
+"
+" let s:slhlcmd = ''
+" function! s:StatusLine(mode)
+"   if a:mode == 'Enter'
+"     silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
+"     silent execute g:hi_insert
+"   else
+"     highlight clear StatusLine
+"     silent execute s:slhlcmd
+"     redraw
+"   endif
+" endfunction
+"
+" function! s:GetHighlight(hi)
+"   redir => hl
+"   execute 'highlight '.a:hi
+"   redir END
+"   let hl = substitute(hl, '[\r\n]', '', 'g')
+"   let hl = substitute(hl, 'xxx', '', '')
+"   return hl
+" endfunction
 " }}}
 
 " 全角スペース、行末スペースを強調表示 {{{
