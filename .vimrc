@@ -692,23 +692,25 @@ autocmd MyAutoCmd BufReadPost *
 "   endif
 " endfunction
 "
-" function! s:GetHighlight(hi)
-"   redir => hl
-"   execute 'highlight '.a:hi
-"   redir END
-"   let hl = substitute(hl, '[\r\n]', '', 'g')
-"   let hl = substitute(hl, 'xxx', '', '')
-"   return hl
-" endfunction
 " }}}
 
 " 全角スペース、行末スペースを強調表示 {{{
+function! s:GetHighlight(hi)
+  redir => hl
+  execute 'highlight '.a:hi
+  redir END
+  let hl = substitute(hl, '[\r\n]', '', 'g')
+  let hl = substitute(hl, 'xxx', '', '')
+  return hl
+endfunction
+
 function! s:HighlightSpace()
   silent! let hi = s:GetHighlight('HighlightSpace')
   if hi =~ 'E411' || hi =~ 'cleared$'
     highlight HighlightSpace cterm=underline ctermfg=red gui=underline guifg=red
   endif
 endfunction
+
 if has('syntax')
   autocmd MyAutoCmd ColorScheme       * call  s:HighlightSpace()
   autocmd MyAutoCmd VimEnter,WinEnter * match HighlightSpace /　\|\s\+$/
