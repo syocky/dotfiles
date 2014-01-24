@@ -143,7 +143,7 @@ NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/vimfiler'
 NeoBundle 'Shougo/vimproc',
           \ { 'build' : {
-          \     'windows' : 'make -f make_mingw32.mak',
+          \     'windows' : 'make -f make_mingw64.mak',
           \     'unix'    : 'make -f make_unix.mak',
           \   }
           \ }
