@@ -310,6 +310,8 @@ set incsearch
 " Migemo
 if has('migemo')
   set migemo
+  nnoremap / g/
+  nnoremap ? g?
 endif
 " 検索文字の強調表示
 set hlsearch
@@ -1191,6 +1193,7 @@ let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplete#force_omni_input_patterns.java = '\%(\h\w*\|)\)\.'
 let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+let g:neocomplete#force_omni_input_patterns.go = '\h\w*\.\?'
 " 辞書ファイルの定義
 let g:neocomplete#sources#dictionary#dictionaries = {
 \ 'default' : '',
