@@ -260,6 +260,8 @@ if !isdirectory(&directory)
 endif
 " viminfoの出力先
 set viminfo& viminfo+=n$MY_VIM_TMPDIR/.viminfo
+" undofile無効
+set noundofile
 " ビジュアルモードで選択したテキストが自動でクリッポボードに入る
 set clipboard& clipboard+=autoselect
 " 8進数を無効にする
@@ -294,6 +296,9 @@ set tags& tags+=tags
 set autoread
 " helpの検索順序
 set helplang=ja,en
+" スペルチェック
+set spell
+set spelllang& spelllang+=cjk
 
 " }}}
 
