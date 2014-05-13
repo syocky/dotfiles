@@ -125,7 +125,7 @@ NeoBundleLazy 'Rip-Rip/clang_complete',
               \     'filetypes' : ['c', 'cpp']
               \   }
               \ }
-NeoBundle 'Shougo/neobundle.vim'
+NeoBundleFetch 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neocomplete.vim'
 NeoBundleLazy 'Shougo/neosnippet',
               \ {
