@@ -107,16 +107,6 @@ NeoBundleLazy 'mattn/zencoding-vim',
               \     'insert' : 1,
               \   }
               \ }
-NeoBundleLazy 'nathanaelkane/vim-indent-guides',
-              \ {
-              \   'autoload' : {
-              \     'commands' : [
-              \       'IndentGuidesToggle',
-              \       'IndentGuidesEnable',
-              \       'IndentGuidesDisable',
-              \     ]
-              \   }
-              \ }
 NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
 NeoBundleLazy 'Rip-Rip/clang_complete',
@@ -208,6 +198,7 @@ NeoBundleLazy 'vim-scripts/taglist.vim',
               \   }
               \ }
 NeoBundle 'w0ng/vim-hybrid'
+NeoBundle 'Yggdroot/indentLine'
 NeoBundle 'zhaocai/unite-scriptnames'
 
 filetype plugin indent on
@@ -452,12 +443,11 @@ if has('gui_running')
   set guioptions+=a
 
   " フォント
-  if has('win32') || has('win64')
-    set guifont=Ricty\ Regular\ for\ Powerline:h12
-    set guifontwide=Ricty:h12
-  elseif has('unix')
-    set guifont=Ricty\ 12
-  endif
+  "set guifont=Ricty\ Regular\ for\ Powerline:h12
+  "set guifontwide=Ricty:h12
+  set guifont=Ricty_Diminished_Discord:h12:cSHIFTJIS
+  set guifontwide=Ricty_Diminished_Discord:h12:cSHIFTJIS
+  set renderoptions=type:directx
 
   " 最大化
   autocmd MyAutoCmd GUIEnter * simalt ~x
@@ -925,9 +915,7 @@ let g:lightline = {
       \   'fileencoding': 'MyFileencoding',
       \   'mode': 'MyMode',
       \   'reanimate': 'MyReanimate',
-      \ },
-      \ 'separator': { 'left': '⮀', 'right': '⮂' },
-      \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
+      \ }
       \ }
 
 function! MyModified()
@@ -935,7 +923,7 @@ function! MyModified()
 endfunction
 
 function! MyReadonly()
-  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
+  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
 endfunction
 
 function! MyFilename()
@@ -949,8 +937,7 @@ endfunction
 
 function! MyFugitive()
   if &ft !~? 'vimfiler\|gundo' && exists("*fugitive#head")
-    let _ = fugitive#head()
-    return strlen(_) ? '⭠ '._ : ''
+    return fugitive#head()
   endif
   return ''
 endfunction
@@ -1053,20 +1040,6 @@ unlet s:movetab
 
 let g:user_zen_leader_key = '<C-k>'
 let g:user_zen_settings = { 'lang' : 'ja' }
-
-" }}}
-
-" vim-indent-guides {{{
-
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_guide_size = 1
-let g:indent_guides_auto_colors = 1
-if !has('gui_running')
-  let g:indent_guides_auto_colors = 0
-  autocmd MyAutoCmd VimEnter,ColorScheme * highlight IndentGuidesOdd   ctermbg=0
-  autocmd MyAutoCmd VimEnter,ColorScheme * highlight IndentGuidesEvent ctermbg=8
-endif
-nmap <silent> <Leader>ig <Plug>IndentGuidesToggle
 
 " }}}
 
@@ -1553,5 +1526,10 @@ nnoremap <Leader>tl :<C-u>TlistToggle<CR>
 
 " }}}
 
+" indentline {{{
+
+nmap <silent> <Leader>il :<C-u>IndentLinesToggle<CR>
+
+" }}}
 
 " }}}
