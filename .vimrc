@@ -288,8 +288,8 @@ set autoread
 " helpの検索順序
 set helplang=ja,en
 " スペルチェック
-set spell
-set spelllang& spelllang+=cjk
+"set spell
+"set spelllang& spelllang+=cjk
 
 " }}}
 
@@ -445,8 +445,8 @@ if has('gui_running')
   " フォント
   "set guifont=Ricty\ Regular\ for\ Powerline:h12
   "set guifontwide=Ricty:h12
-  set guifont=Ricty_Diminished_Discord:h12:cSHIFTJIS
-  set guifontwide=Ricty_Diminished_Discord:h12:cSHIFTJIS
+  set guifont=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
+  set guifontwide=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
   set renderoptions=type:directx
 
   " 最大化
