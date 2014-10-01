@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 全てのファイルを一度、無視する。
 /*
 # さらに、ドットから始まる設定ファイルを無視する。
@@ -14,31 +13,8 @@
 !/.vrapperrc
 !/.vim
 !/.gitignore
+!/.gitconfig
 
 # 上記に"無視したくないファイル"としてリスト化した中から、さらに"無視したいファイル"を指定する。
 /.vim/.tmp
 /.vim/bundle
-=======
-# 全てのファイルを一度、無視する。
-/*
-# さらに、ドットから始まる設定ファイルを無視する。
-/.*
-
-# しかし、"無視したくないファイル"は以下に"![ファイル名]"で指定する。
-##### Gitで管理するファイルリスト #####
-!/.vimrc
-!/.vimrc.local_template
-!/.gvimrc
-!/.zshrc
-!/.zshenv
-!/.vrapperrc
-!/.vim
-!/.gitignore
-
-# 上記に"無視したくないファイル"としてリスト化した中から、さらに"無視したいファイル"を指定する。
-/.vim/.tmp
-/.vim/bundle
-/.vim/eclim
-/.vim/plugin/eclim.vim
-/.vim/plugin/rsense.vim
->>>>>>> 4a07aa7a44f937262d2e59be934dc7387342ec7b
