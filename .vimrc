@@ -62,6 +62,7 @@ let mapleader=","
 
 " セッション項目
 set sessionoptions=blank,buffers,curdir,folds,help,localoptions,slash,tabpages
+
 " }}}
 
 " プラグイン群 {{{ =============================================================
@@ -288,8 +289,8 @@ set autoread
 " helpの検索順序
 set helplang=ja,en
 " スペルチェック
-"set spell
-"set spelllang& spelllang+=cjk
+set nospell
+set spelllang& spelllang+=cjk
 
 " }}}
 
