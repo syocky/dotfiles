@@ -5,6 +5,7 @@
 # 重複したパスを登録しない
 typeset -U path
 typeset -U manpath
+typeset -U library_path
 
 # パスを登録
 # (N-/): 存在しないディレクトリは登録しない
@@ -22,6 +23,10 @@ path=($HOME/local/bin(N-/)
 manpath=($HOME/local/share/man(N-/)
          /usr/*/man(N-/)
          /usr/local/*/man(N-/))
+
+library_path=(
+  /usr/local/*/lib(N-/)
+)
 
 #-----------------------------------------------------------------
 # 環境変数
