@@ -23,9 +23,34 @@ else
 endif
 
 " 一時ファイルパス
-let $MY_VIM_TMPDIR = expand('$MY_VIMRUNTIME/.tmp')
+let $MY_VIM_TMPDIR = '$MY_VIMRUNTIME/.tmp'
+
+" プラグインのパス
+let s:plugin_dir = '$MY_VIMRUNTIME/bundle'
+
+" neobundleのパス
+let s:neobunle_dir = globpath(s:plugin_dir, 'neobundle.vim')
 
 filetype off
+
+" neobundleがインストールされていない場合、インストールを行う
+if !isdirectory(s:neobunle_dir)
+  if !executable("git")
+    echo "Please install git."
+    finish
+  endif
+
+  if input("Install neobundle.vim? [Y/N] : ") ==? "Y"
+    if !isdirectory(s:plugin_dir)
+      call mkdir(s:plugin_dir, "p")
+    endif
+    execute "!git clone git://github.com/Shougo/neobundle.vim " . s:neobunle_dir
+    echo "neobundle installed. Please restart vim."
+  else
+    echo "Canceled."
+  endif
+  finish
+endif
 
 if has('vim_starting')
   " ローカル設定ファイル読み込み
@@ -34,9 +59,8 @@ if has('vim_starting')
   endif
   " NeoBundleをロード
   if &runtimepath !~ '/neobundle.vim'
-    execute 'set runtimepath+=' . '$MY_VIMRUNTIME/bundle/neobundle.vim'
+    execute 'set runtimepath+=' . s:neobunle_dir
   endif
-  call neobundle#rc(expand('$MY_VIMRUNTIME/bundle'))
 
   if $GOROOT != ''
     " Goのvim設定ファイル読み込み
@@ -67,6 +91,8 @@ set sessionoptions=blank,buffers,curdir,folds,help,localoptions,slash,tabpages
 
 " プラグイン群 {{{ =============================================================
 
+call neobundle#begin(s:plugin_dir)
+
 " unite prefix key.
 nnoremap [unite] <Nop>
 xnoremap [unite] <Nop>
@@ -85,7 +111,6 @@ NeoBundleLazy 'glidenote/memolist.vim',
               \   }
               \ }
 NeoBundle 'h1mesuke/vim-alignta'
-NeoBundle 'h1mesuke/unite-outline'
 NeoBundle 'itchyny/landscape.vim'
 NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'jceb/vim-hier'
@@ -118,6 +143,7 @@ NeoBundleLazy 'Rip-Rip/clang_complete',
               \ }
 NeoBundleFetch 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neocomplete.vim'
+NeoBundle 'Shougo/neomru.vim'
 NeoBundleLazy 'Shougo/neosnippet',
               \ {
               \   'autoload' : {
@@ -130,7 +156,9 @@ NeoBundleLazy 'Shougo/neosnippet-snippets',
               \     'insert' : 1,
               \   }
               \ }
+NeoBundle 'Shougo/tabpagebuffer.vim'
 NeoBundle 'Shougo/unite.vim'
+NeoBundle 'Shougo/unite-outline'
 NeoBundle 'Shougo/vimfiler'
 NeoBundle 'Shougo/vimproc',
           \ { 'build' : {
@@ -201,6 +229,8 @@ NeoBundleLazy 'vim-scripts/taglist.vim',
 NeoBundle 'w0ng/vim-hybrid'
 NeoBundle 'Yggdroot/indentLine'
 NeoBundle 'zhaocai/unite-scriptnames'
+
+call neobundle#end()
 
 filetype plugin indent on
 
@@ -344,10 +374,6 @@ endif
 "set lazyredraw
 " 行番号表示
 set number
-if version >= 703
-  " 相対行番号表示(7.3)
-  "set relativenumber
-endif
 " 括弧の対応表示時間
 "set showmatch
 set matchtime=0
@@ -728,7 +754,7 @@ endif
 
 " セッションを自動保存・復元する {{{
 " セッション保存ファイルのフルパス
-"let s:last_session = expand('$MY_VIM_TMPDIR/.vim_last_session')
+"let s:last_session = '$MY_VIM_TMPDIR/.vim_last_session'
 " VIM終了時にセッション保存ファイルに上書き保存
 "autocmd MyAutoCmd VimLeave * execute "mks! " . s:last_session
 " 起動時にセッションファイルがあるかどうかチェック
@@ -740,7 +766,7 @@ endif
 " }}}
 
 " matchitスクリプトを読み込む
-"source $MY_VIMRUNTIME/macros/matchit.vim
+"source '$MY_VIMRUNTIME/macros/matchit.vim'
 
 " Quickfixウィンドウの開閉をトグル {{{
 function! s:toggle_quickfix_window()
@@ -823,7 +849,7 @@ xmap <Leader>u [unite]
 
 " memolist.vim {{{
 
-let g:memolist_path = expand('$MY_VIM_TMPDIR/.memolist')
+let g:memolist_path = '$MY_VIM_TMPDIR/.memolist'
 let g:memolist_prompt_tags = 1
 let g:memolist_prompt_categories = 1
 let g:memolist_vimfiler = 0
@@ -876,6 +902,9 @@ xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
 nnoremap <silent> [unite]oi  :<C-u>Unite outline -start-insert<CR>
 nnoremap <silent> [unite]ov  :<C-u>Unite -no-quit -vertical -winwidth=50 outline<CR>
 
+" この設定をしないとエラーになる
+let g:unite_abbr_highlight = 'normal'
+
 let g:unite_source_outline_filetype_options = {
 \        '*': {
 \          'auto_update': 1,
@@ -885,9 +914,6 @@ let g:unite_source_outline_filetype_options = {
 \          'auto_update': 0,
 \        },
 \ }
-
-autocmd MyAutoCmd FileType unite call unite#set_profile('outline', 'ignorecase', 1)
-autocmd MyAutoCmd FileType unite call unite#set_profile('outline', 'smartcase',  1)
 
 " }}}
 
@@ -1056,7 +1082,7 @@ let g:jellybeans_overrides = {
 " vim-reanimate {{{
 
 " 保存先のディレクトリ
-let g:reanimate_save_dir = expand('$MY_VIM_TMPDIR/.reanimate')
+let g:reanimate_save_dir = '$MY_VIM_TMPDIR/.reanimate'
 
 " デフォルトの保存名
 let g:reanimate_default_save_name = "latest"
@@ -1112,7 +1138,7 @@ let g:clang_complete_auto = 0
 let g:clang_debug = 0
 let g:clang_use_library = 1
 let g:clang_library_path = $MY_CLANG_PATH
-let g:clang_exec = $MY_CLANG_PATH . '/clang.exe'
+let g:clang_exec = globpath($MY_CLANG_PATH, 'clang.exe')
 let g:clang_user_options =
 \ '-fms-extensions -fgnu-runtime '.
 \ '-include malloc.h '.
@@ -1136,7 +1162,7 @@ nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
 " 自動有効
 let g:neocomplete#enable_at_startup = 1
 " 一時ディレクトリ
-let g:neocomplete#data_directory = expand('$MY_VIM_TMPDIR/.neocomplete')
+let g:neocomplete#data_directory = '$MY_VIM_TMPDIR/.neocomplete'
 " デリミタ自動補完
 let g:neocomplete#enable_auto_delimiter = 1
 " スマートケース方式の補完を有効
@@ -1157,7 +1183,7 @@ autocmd MyAutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#Compl
 autocmd MyAutoCmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd MyAutoCmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd MyAutoCmd FileType go setlocal omnifunc=gocomplete#Complete
-if filereadable(expand('$MY_VIMRUNTIME/plugin/eclim.vim'))
+if filereadable('$MY_VIMRUNTIME/plugin/eclim.vim')
   autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
 endif
 " オムニ補完のキーワードパターン定義
@@ -1204,7 +1230,7 @@ inoremap <expr><C-e>  neocomplete#cancel_popup()
 " neosnippet {{{
 
 " ユーザー定義スニペット保存ディレクトリ
-let g:neosnippet#snippets_directory = expand('$MY_VIMRUNTIME/snippets')
+let g:neosnippet#snippets_directory = '$MY_VIMRUNTIME/snippets'
 " キーマッピング
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -1225,13 +1251,18 @@ vmap <expr><TAB> neosnippet#expandable() ?
 " インサートモードで開始
 let g:unite_enable_start_insert = 1
 " unite, sourceが内部で保存するディレクトリ
-let g:unite_data_directory = expand('$MY_VIM_TMPDIR/.unite')
+let g:unite_data_directory = '$MY_VIM_TMPDIR/.unite'
 " 最近開いたファイル履歴の保存数
 let g:unite_source_file_mru_limit = 50
 " file_mruの表示フォーマットを指定。空にすると表示スピードが高速化される
 let g:unite_source_file_mru_filename_format = ''
 " uniteのステータスラインを無効
 let g:unite_force_overwrite_statusline = 0
+" デフォルトオプション設定
+call unite#custom#profile('default', 'context', {
+\       'ignorecase' : &ignorecase,
+\       'smartcase'  : &smartcase
+\ })
 
 " キーマッピング
 " 現在開いているファイルのディレクトリ下のファイル一覧
@@ -1274,7 +1305,7 @@ nmap <Leader>ff [vimfiler]
 " vimfilerをデフォルトのファイラにする
 let g:vimfiler_as_default_explorer = 1
 " vimfiler, sourceが内部で保存するディレクトリ
-let g:vimfiler_data_directory = expand('$MY_VIM_TMPDIR/.vimfiler')
+let g:vimfiler_data_directory = '$MY_VIM_TMPDIR/.vimfiler'
 " セーフモード設定
 let g:vimfiler_safe_mode_by_default = 0
 " 自動cdのON/OFF
@@ -1309,7 +1340,7 @@ nnoremap [vimshell] <Nop>
 nmap <Leader>s [vimsh]
 
 " 一時ディレクトリ
-let g:vimshell_temporary_directory = expand('$MY_VIM_TMPDIR/.vimshell')
+let g:vimshell_temporary_directory = '$MY_VIM_TMPDIR/.vimshell'
 " ユーザ用プロンプト
 let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 let g:vimshell_force_overwrite_statusline = 0
@@ -1416,7 +1447,7 @@ command! CppSyntaxCheck :QuickRun CppSyntaxCheck
 
 " vim-ref {{{
 
-let g:ref_cache_dir = expand('$MY_VIM_TMPDIR/.ref_cache_dir')
+let g:ref_cache_dir = '$MY_VIM_TMPDIR/.ref_cache_dir'
 let g:ref_use_vimproc = 1
 
 " }}}
