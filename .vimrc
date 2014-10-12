@@ -9,7 +9,6 @@ if s:iswin
   set shellslash
 endif
 
-
 " 自動コマンド初期化
 augroup MyAutoCmd
   autocmd!
@@ -23,33 +22,36 @@ else
 endif
 
 " 一時ファイルパス
-let $MY_VIM_TMPDIR = globpath($MY_VIMRUNTIME, '.tmp')
+let $MY_VIM_TMPDIR = $MY_VIMRUNTIME . '/.tmp'
 
 " プラグインのパス
-let s:plugin_dir = globpath($MY_VIMRUNTIME, 'bundle')
+let s:plugin_dir = $MY_VIMRUNTIME . '/bundle'
 
 " neobundleのパス
-let s:neobunle_dir = globpath(s:plugin_dir, 'neobundle.vim')
+let s:neobundle_dir = s:plugin_dir . '/neobundle.vim'
 
 filetype off
 
 if has("vim_starting")
-  if !isdirectory(s:neobunle_dir)
+  if !isdirectory(s:neobundle_dir)
     " neobundleがインストールされていない場合、インストールを行う
     if !executable("git")
       echo "Please install git."
       finish
     endif
 
-    if input("Install neobundle.vim? [Y/N] : ") ==? "Y"
-      if !isdirectory(s:plugin_dir)
-        call mkdir(s:plugin_dir, "p")
+    function! s:install_neobundle()
+      if input("Install neobundle.vim? [Y/N] : ") =~? '^y\(es\)\=$'
+        if !isdirectory(s:plugin_dir)
+          call mkdir(s:plugin_dir, "p")
+        endif
+        execute "!git clone git://github.com/Shougo/neobundle.vim " . s:neobundle_dir
+        echo "neobundle installed. Please restart vim."
+      else
+        echo "Canceled."
       endif
-      execute "!git clone git://github.com/Shougo/neobundle.vim " . s:neobunle_dir
-      echo "neobundle installed. Please restart vim."
-    else
-      echo "Canceled."
-    endif
+    endfunction
+    autocmd MyAutoCmd VimEnter * call s:install_neobundle()
     finish
   else
     " ローカル設定ファイル読み込み
@@ -58,7 +60,7 @@ if has("vim_starting")
     endif
     " NeoBundleをロード
     if &runtimepath !~ '/neobundle.vim'
-      execute 'set runtimepath+=' . s:neobunle_dir
+      execute 'set runtimepath+=' . s:neobundle_dir
     endif
 
     if $GOROOT != ''
@@ -754,7 +756,7 @@ endif
 
 " セッションを自動保存・復元する {{{
 " セッション保存ファイルのフルパス
-"let s:last_session = globpath($MY_VIM_TMPDIR, '.vim_last_session')
+"let s:last_session = $MY_VIM_TMPDIR . '/.vim_last_session'
 " VIM終了時にセッション保存ファイルに上書き保存
 "autocmd MyAutoCmd VimLeave * execute "mks! " . s:last_session
 " 起動時にセッションファイルがあるかどうかチェック
@@ -766,7 +768,7 @@ endif
 " }}}
 
 " matchitスクリプトを読み込む
-"source globpath($MY_VIMRUNTIME, 'macros/matchit.vim')
+"source $MY_VIMRUNTIME/macros/matchit.vim
 
 " Quickfixウィンドウの開閉をトグル {{{
 function! s:toggle_quickfix_window()
@@ -849,7 +851,7 @@ xmap <Leader>u [unite]
 
 " memolist.vim {{{
 
-let g:memolist_path = globpath($MY_VIM_TMPDIR, '.memolist')
+let g:memolist_path = $MY_VIM_TMPDIR . '/.memolist'
 let g:memolist_prompt_tags = 1
 let g:memolist_prompt_categories = 1
 let g:memolist_vimfiler = 0
@@ -1082,7 +1084,7 @@ let g:jellybeans_overrides = {
 " vim-reanimate {{{
 
 " 保存先のディレクトリ
-let g:reanimate_save_dir = globpath($MY_VIM_TMPDIR, '.reanimate')
+let g:reanimate_save_dir = $MY_VIM_TMPDIR . '/.reanimate'
 
 " デフォルトの保存名
 let g:reanimate_default_save_name = "latest"
@@ -1162,7 +1164,7 @@ nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
 " 自動有効
 let g:neocomplete#enable_at_startup = 1
 " 一時ディレクトリ
-let g:neocomplete#data_directory = globpath($MY_VIM_TMPDIR, '.neocomplete')
+let g:neocomplete#data_directory = $MY_VIM_TMPDIR . '/.neocomplete'
 " デリミタ自動補完
 let g:neocomplete#enable_auto_delimiter = 1
 " スマートケース方式の補完を有効
@@ -1183,7 +1185,7 @@ autocmd MyAutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#Compl
 autocmd MyAutoCmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd MyAutoCmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd MyAutoCmd FileType go setlocal omnifunc=gocomplete#Complete
-if filereadable(globpath($MY_VIMRUNTIME, 'plugin/eclim.vim'))
+if filereadable($MY_VIMRUNTIME . '/plugin/eclim.vim')
   autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
 endif
 " オムニ補完のキーワードパターン定義
@@ -1230,7 +1232,7 @@ inoremap <expr><C-e>  neocomplete#cancel_popup()
 " neosnippet {{{
 
 " ユーザー定義スニペット保存ディレクトリ
-let g:neosnippet#snippets_directory = globpath($MY_VIMRUNTIME, 'snippets')
+let g:neosnippet#snippets_directory = $MY_VIMRUNTIME . '/snippets'
 " キーマッピング
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -1251,7 +1253,7 @@ vmap <expr><TAB> neosnippet#expandable() ?
 " インサートモードで開始
 let g:unite_enable_start_insert = 1
 " unite, sourceが内部で保存するディレクトリ
-let g:unite_data_directory = globpath($MY_VIM_TMPDIR, '.unite')
+let g:unite_data_directory = $MY_VIM_TMPDIR . '/.unite'
 " 最近開いたファイル履歴の保存数
 let g:unite_source_file_mru_limit = 50
 " file_mruの表示フォーマットを指定。空にすると表示スピードが高速化される
@@ -1305,7 +1307,7 @@ nmap <Leader>ff [vimfiler]
 " vimfilerをデフォルトのファイラにする
 let g:vimfiler_as_default_explorer = 1
 " vimfiler, sourceが内部で保存するディレクトリ
-let g:vimfiler_data_directory = globpath($MY_VIM_TMPDIR, '.vimfiler')
+let g:vimfiler_data_directory = $MY_VIM_TMPDIR . '/.vimfiler'
 " セーフモード設定
 let g:vimfiler_safe_mode_by_default = 0
 " 自動cdのON/OFF
@@ -1340,7 +1342,7 @@ nnoremap [vimshell] <Nop>
 nmap <Leader>s [vimsh]
 
 " 一時ディレクトリ
-let g:vimshell_temporary_directory = globpath($MY_VIM_TMPDIR, '.vimshell')
+let g:vimshell_temporary_directory = $MY_VIM_TMPDIR . '/.vimshell'
 " ユーザ用プロンプト
 let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 let g:vimshell_force_overwrite_statusline = 0
@@ -1447,7 +1449,7 @@ command! CppSyntaxCheck :QuickRun CppSyntaxCheck
 
 " vim-ref {{{
 
-let g:ref_cache_dir = globpath($MY_VIM_TMPDIR, '.ref_cache_dir')
+let g:ref_cache_dir = $MY_VIM_TMPDIR . '/.ref_cache_dir'
 let g:ref_use_vimproc = 1
 
 " }}}
