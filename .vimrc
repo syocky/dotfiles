@@ -472,14 +472,20 @@ if has('gui_running')
   set guioptions+=a
 
   " フォント
-  "set guifont=Ricty\ Regular\ for\ Powerline:h12
-  "set guifontwide=Ricty:h12
-  set guifont=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
-  set guifontwide=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
-  set renderoptions=type:directx
+  if s:iswin
+    set guifont=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
+    set guifontwide=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
+    set renderoptions=type:directx
 
-  " 最大化
-  autocmd MyAutoCmd GUIEnter * simalt ~x
+    " 最大化
+    autocmd MyAutoCmd GUIEnter * simalt ~x
+  else
+    set guifont=Ricty\ Diminished\ Discord\ 13.5
+    set guifontwide=Ricty\ Diminished\ Discord\ 13.5
+
+    " 最大化
+    set lines=999 columns=999
+  endif
 
   " 半透明化
   " gui
