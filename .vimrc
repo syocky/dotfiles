@@ -102,6 +102,12 @@ nmap <Leader>u [unite]
 xmap <Leader>u [unite]
 
 NeoBundle 'dannyob/quickfixstatus'
+NeoBundleLazy 'dgryski/vim-godef',
+              \ {
+              \   'autoload' : {
+              \     'filetypes' : 'go'
+              \   }
+              \ }
 NeoBundleLazy 'glidenote/memolist.vim',
               \ {
               \   'autoload' : {
@@ -208,6 +214,11 @@ NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundleLazy 'vim-jp/cpp-vim',
               \ { 'autoload' : {
               \     'filetypes' : ['c', 'cpp'],
+              \   }
+              \ }
+NeoBundleLazy 'vim-jp/vim-go-extra',
+              \ { 'autoload' : {
+              \     'filetypes' : 'go',
               \   }
               \ }
 NeoBundleLazy 'vim-scripts/DirDiff.vim',
@@ -1570,6 +1581,11 @@ nnoremap <Leader>tl :<C-u>TlistToggle<CR>
 
 nmap <silent> <Leader>il :<C-u>IndentLinesToggle<CR>
 
+" }}}
+
+" vim-go-extra {{{
+" 保存時に自動フォーマット
+autocmd MyAutoCmd FileType go autocmd MyAutoCmd BufWritePre <buffer> Fmt
 " }}}
 
 " }}}
