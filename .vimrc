@@ -510,8 +510,8 @@ syntax enable
 "colorscheme torte
 "colorscheme desert256
 "colorscheme jellybeans
-colorscheme hybrid
-"colorscheme landscape
+"colorscheme hybrid
+colorscheme landscape
 
 " ボップアップのハイライト
 function! s:SetPmenuHighlight()
@@ -946,7 +946,7 @@ let g:landscape_highlight_todo = 1
 " lightline.vim {{{
 
 let g:lightline = {
-      \ 'colorscheme': 'jellybeans',
+      \ 'colorscheme': 'landscape',
       \ 'mode_map': { 'c': 'NORMAL' },
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'reanimate' ] ]
