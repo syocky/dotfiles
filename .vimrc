@@ -419,9 +419,7 @@ set display=lastline
 set wrap
 " Tab、行末の半角スペースを明示的に表示する
 set list
-"set listchars=tab:>-,trail:~,extends:>,precedes:<
-"set listchars=eol:|,tab:≫-,trail:~,extends:≫,precedes:≪,nbsp:%
-set listchars=tab:▸\ ,trail:~,extends:»,precedes:«,nbsp:%
+set listchars=tab:^\ ,trail:~,extends:>,precedes:<,nbsp:%
 " スクロール時に表示を5行確保
 set scrolloff=10
 " カーソルが常に中央行
@@ -940,6 +938,12 @@ let g:unite_source_outline_filetype_options = {
 
 let g:landscape_highlight_url = 1
 let g:landscape_highlight_todo = 1
+
+" SpecialKey(Tabなど)の色を少し抑える
+autocmd MyAutoCmd ColorScheme landscape highlight SpecialKey guifg=#373b41
+if g:colors_name == 'landscape'
+  highlight SpecialKey guifg=#373b41
+endif
 
 " }}}
 
