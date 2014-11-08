@@ -513,10 +513,10 @@ colorscheme landscape
 
 " ボップアップのハイライト
 function! s:SetPmenuHighlight()
-  highlight Pmenu ctermfg=White ctermbg=DarkGreen cterm=none guifg=White guibg=#004000 gui=bold
-  highlight PmenuSbar ctermfg=Black ctermbg=Green guibg=#5555ff
-  highlight PmenuSel ctermfg=Black ctermbg=LightGreen cterm=none guifg=White guibg=#48A048 gui=bold
-  highlight PmenuThumb ctermbg=Blue guibg=White
+  highlight Pmenu ctermfg=245 ctermbg=235 guifg=#8a8a8a guibg=#262626
+  highlight PmenuSel ctermfg=15 ctermbg=39 guifg=#ffffff guibg=#00afff
+  highlight PmenuSbar ctermbg=235 guibg=#262626
+  highlight PmenuThumb ctermbg=240 guibg=#585858
 endfunction
 if has('syntax')
   autocmd MyAutoCmd ColorScheme * call s:SetPmenuHighlight()
