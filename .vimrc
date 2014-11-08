@@ -514,7 +514,7 @@ colorscheme landscape
 " ボップアップのハイライト
 function! s:SetPmenuHighlight()
   highlight Pmenu ctermfg=245 ctermbg=235 guifg=#8a8a8a guibg=#262626
-  highlight PmenuSel ctermfg=15 ctermbg=39 guifg=#ffffff guibg=#00afff
+  highlight PmenuSel ctermfg=27 ctermbg=39 guifg=#ffffff guibg=#005fff
   highlight PmenuSbar ctermbg=235 guibg=#262626
   highlight PmenuThumb ctermbg=240 guibg=#585858
 endfunction
