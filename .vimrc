@@ -489,8 +489,8 @@ if has('gui_running')
     " 最大化
     autocmd MyAutoCmd GUIEnter * simalt ~x
   else
-    set guifont=Ricty\ Diminished\ Discord\ for\ Powerline 13.5
-    set guifontwide=Ricty\ Diminished\ Discord\ for\ Powerline 13.5
+    let &guifont = "Ricty\ Diminished\ Discord\ for\ Powerline 12, Ricty\ Diminished\ Discord 12, Monospace 10, VLゴシック 11"
+    let &guifontwide = &guifont
 
     " 最大化
     set lines=999 columns=999
