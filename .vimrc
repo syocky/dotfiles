@@ -374,7 +374,7 @@ cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
 
 " 表示設定 {{{ =================================================================
 
-if !s:iswin
+if !has('gui_running')
   " 256色モード
   set t_Co=256
   " モードにあわせてカーソル形状変更
@@ -482,15 +482,15 @@ if has('gui_running')
 
   " フォント
   if s:iswin
-    set guifont=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
-    set guifontwide=Ricty_Diminished_Discord:h13.5:cSHIFTJIS
+    let &guifont = "Ricty Diminished Discord for Po:h13.5:cSHIFTJIS, Ricty_Diminished_Discord:h13.5:cSHIFTJIS, MeiryoKe_Gothic:h12:cSHIFTJIS"
+    let &guifontwide = &guifont
     set renderoptions=type:directx
 
     " 最大化
     autocmd MyAutoCmd GUIEnter * simalt ~x
   else
-    set guifont=Ricty\ Diminished\ Discord\ 13.5
-    set guifontwide=Ricty\ Diminished\ Discord\ 13.5
+    set guifont=Ricty\ Diminished\ Discord\ for\ Powerline 13.5
+    set guifontwide=Ricty\ Diminished\ Discord\ for\ Powerline 13.5
 
     " 最大化
     set lines=999 columns=999
@@ -965,7 +965,9 @@ let g:lightline = {
       \   'fileencoding': 'MyFileencoding',
       \   'mode': 'MyMode',
       \   'reanimate': 'MyReanimate',
-      \ }
+      \ },
+      \ 'separator': { 'left': '⮀', 'right': '⮂' },
+      \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
       \ }
 
 function! MyModified()
@@ -973,7 +975,7 @@ function! MyModified()
 endfunction
 
 function! MyReadonly()
-  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'x' : ''
+  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
 endfunction
 
 function! MyFilename()
@@ -987,7 +989,8 @@ endfunction
 
 function! MyFugitive()
   if &ft !~? 'vimfiler\|gundo' && exists("*fugitive#head")
-    return fugitive#head()
+    let _ = fugitive#head()
+    return strlen(_) ? '⭠ '._ : ''
   endif
   return ''
 endfunction
