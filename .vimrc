@@ -949,33 +949,44 @@ endif
 
 " lightline.vim {{{
 
+if has("vim_starting")
+  " パッチフォント文字有効化
+  let s:lightline_patched_font_enable = 1
+endif
+
 let g:lightline = {
       \ 'colorscheme': 'landscape',
       \ 'mode_map': { 'c': 'NORMAL' },
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'reanimate' ] ]
       \ },
-      \ 'component_function': {
-      \   'modified': 'MyModified',
-      \   'readonly': 'MyReadonly',
-      \   'fugitive': 'MyFugitive',
-      \   'filename': 'MyFilename',
-      \   'fileformat': 'MyFileformat',
-      \   'filetype': 'MyFiletype',
-      \   'fileencoding': 'MyFileencoding',
-      \   'mode': 'MyMode',
-      \   'reanimate': 'MyReanimate',
-      \ },
       \ 'separator': { 'left': '⮀', 'right': '⮂' },
       \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
       \ }
 
+let s:lightline_component_function = {
+      \ 'modified': 'MyModified',
+      \ 'readonly': 'MyReadonly',
+      \ 'fugitive': 'MyFugitive',
+      \ 'filename': 'MyFilename',
+      \ 'fileformat': 'MyFileformat',
+      \ 'filetype': 'MyFiletype',
+      \ 'fileencoding': 'MyFileencoding',
+      \ 'mode': 'MyMode',
+      \ 'reanimate': 'MyReanimate',
+      \ }
+let g:lightline.component_function = s:lightline_component_function
+
 function! MyModified()
-  return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+  return &ft =~ 'help\|vimfiler' ? '' : &modified ? '+' : &modifiable ? '' : '-'
 endfunction
 
 function! MyReadonly()
-  return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? '⭤' : ''
+  if s:lightline_patched_font_enable == 1
+    return &ft !~? 'help\|vimfiler' && &readonly ? '⭤' : ''
+  else
+    return &ft !~? 'help\|vimfiler' && &readonly ? 'RO' : ''
+  endif
 endfunction
 
 function! MyFilename()
@@ -988,9 +999,13 @@ function! MyFilename()
 endfunction
 
 function! MyFugitive()
-  if &ft !~? 'vimfiler\|gundo' && exists("*fugitive#head")
-    let _ = fugitive#head()
-    return strlen(_) ? '⭠ '._ : ''
+  if &ft !~? 'vimfiler' && exists("*fugitive#head")
+    if s:lightline_patched_font_enable == 1
+      let _ = fugitive#head()
+      return strlen(_) ? '⭠ '._ : ''
+    else
+      return fugitive#head()
+    endif
   endif
   return ''
 endfunction
@@ -1012,8 +1027,24 @@ function! MyMode()
 endfunction
 
 function! MyReanimate()
-    return reanimate#is_saved() ? reanimate#last_point() : "no save"
+  return reanimate#is_saved() ? reanimate#last_point() : "no save"
 endfunction
+
+" パッチフォント文字有効化トグル
+function! s:lightline_patched_font_toggle()
+  if s:lightline_patched_font_enable == 1
+    let g:lightline.separator = { 'left': '', 'right': '' }
+    let g:lightline.subseparator = { 'left': '|', 'right': '|' }
+  else
+    let g:lightline.separator = { 'left': '⮀', 'right': '⮂' }
+    let g:lightline.subseparator = { 'left': '⮁', 'right': '⮃' }
+  endif
+  let g:lightline.component_function = s:lightline_component_function
+  call lightline#init()
+  call lightline#update()
+  let s:lightline_patched_font_enable = !s:lightline_patched_font_enable
+endfunction
+command! ToggleLightLinePatchedFont call s:lightline_patched_font_toggle()
 
 " }}}
 
