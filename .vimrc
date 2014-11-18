@@ -661,8 +661,6 @@ nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 " 挿入モード終了時にIME状態を保存しない
 inoremap <silent> <ESC> <ESC>
 inoremap <silent> <C-[> <ESC>
-" 「日本語入力固定モード」切り替えキー
-inoremap <silent> <C-j> <C-^>
 " fコマンドなどでのIMEをOFFにする
 let g:IMState = 0
 autocmd MyAutoCmd InsertEnter * let &iminsert = g:IMState
@@ -960,8 +958,8 @@ let g:lightline = {
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'reanimate' ] ]
       \ },
-      \ 'separator': { 'left': '⮀', 'right': '⮂' },
-      \ 'subseparator': { 'left': '⮁', 'right': '⮃' }
+      \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
+      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
       \ }
 
 let s:lightline_component_function = {
@@ -983,7 +981,7 @@ endfunction
 
 function! MyReadonly()
   if s:lightline_patched_font_enable == 1
-    return &ft !~? 'help\|vimfiler' && &readonly ? '⭤' : ''
+    return &ft !~? 'help\|vimfiler' && &readonly ? "\ue0a2" : ''
   else
     return &ft !~? 'help\|vimfiler' && &readonly ? 'RO' : ''
   endif
@@ -1002,7 +1000,7 @@ function! MyFugitive()
   if &ft !~? 'vimfiler' && exists("*fugitive#head")
     if s:lightline_patched_font_enable == 1
       let _ = fugitive#head()
-      return strlen(_) ? '⭠ '._ : ''
+      return strlen(_) ? "\ue0a0"._ : ''
     else
       return fugitive#head()
     endif
@@ -1036,8 +1034,8 @@ function! s:lightline_patched_font_toggle()
     let g:lightline.separator = { 'left': '', 'right': '' }
     let g:lightline.subseparator = { 'left': '|', 'right': '|' }
   else
-    let g:lightline.separator = { 'left': '⮀', 'right': '⮂' }
-    let g:lightline.subseparator = { 'left': '⮁', 'right': '⮃' }
+    let g:lightline.separator = { 'left': "\ue0b0", 'right': "\ue0b2" }
+    let g:lightline.subseparator = { 'left': "\ue0b1", 'right': "\ue0b3" }
   endif
   let g:lightline.component_function = s:lightline_component_function
   call lightline#init()
