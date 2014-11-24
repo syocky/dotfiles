@@ -1000,7 +1000,7 @@ function! MyFugitive()
   if &ft !~? 'vimfiler' && exists("*fugitive#head")
     if s:lightline_patched_font_enable == 1
       let _ = fugitive#head()
-      return strlen(_) ? "\ue0a0"._ : ''
+      return strlen(_) ? "\ue0a0 "._ : ''
     else
       return fugitive#head()
     endif
