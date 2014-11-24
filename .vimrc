@@ -482,14 +482,14 @@ if has('gui_running')
 
   " フォント
   if s:iswin
-    let &guifont = "Ricty Diminished Discord for Po:h13.5:cSHIFTJIS, Ricty_Diminished_Discord:h13.5:cSHIFTJIS, MeiryoKe_Gothic:h12:cSHIFTJIS"
+    let &guifont = "Ricty Discord for Powerline:h13.5:cSHIFTJIS, Ricty_Discord:h13.5:cSHIFTJIS, MeiryoKe_Gothic:h12:cSHIFTJIS"
     let &guifontwide = &guifont
     set renderoptions=type:directx
 
     " 最大化
     autocmd MyAutoCmd GUIEnter * simalt ~x
   else
-    let &guifont = "Ricty\ Diminished\ Discord\ for\ Powerline 12, Ricty\ Diminished\ Discord 12, Monospace 10, VLゴシック 11"
+    let &guifont = "Ricty\ Discord\ for\ Powerline 12, Ricty\ Discord 12, Monospace 10, VLゴシック 11"
     let &guifontwide = &guifont
 
     " 最大化
