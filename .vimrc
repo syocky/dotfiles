@@ -947,9 +947,9 @@ endif
 
 " lightline.vim {{{
 
-if has("vim_starting")
+if !exists('g:lightline_patched_font_enable')
   " パッチフォント文字有効化
-  let s:lightline_patched_font_enable = 1
+  let g:lightline_patched_font_enable = 1
 endif
 
 let g:lightline = {
@@ -980,7 +980,7 @@ function! MyModified()
 endfunction
 
 function! MyReadonly()
-  if s:lightline_patched_font_enable == 1
+  if g:lightline_patched_font_enable == 1
     return &ft !~? 'help\|vimfiler' && &readonly ? "\ue0a2" : ''
   else
     return &ft !~? 'help\|vimfiler' && &readonly ? 'RO' : ''
@@ -998,7 +998,7 @@ endfunction
 
 function! MyFugitive()
   if &ft !~? 'vimfiler' && exists("*fugitive#head")
-    if s:lightline_patched_font_enable == 1
+    if g:lightline_patched_font_enable == 1
       let _ = fugitive#head()
       return strlen(_) ? "\ue0a0 "._ : ''
     else
@@ -1030,7 +1030,7 @@ endfunction
 
 " パッチフォント文字有効化トグル
 function! s:lightline_patched_font_toggle()
-  if s:lightline_patched_font_enable == 1
+  if g:lightline_patched_font_enable == 1
     let g:lightline.separator = { 'left': '', 'right': '' }
     let g:lightline.subseparator = { 'left': '|', 'right': '|' }
   else
@@ -1040,7 +1040,7 @@ function! s:lightline_patched_font_toggle()
   let g:lightline.component_function = s:lightline_component_function
   call lightline#init()
   call lightline#update()
-  let s:lightline_patched_font_enable = !s:lightline_patched_font_enable
+  let g:lightline_patched_font_enable = !g:lightline_patched_font_enable
 endfunction
 command! ToggleLightLinePatchedFont call s:lightline_patched_font_toggle()
 
