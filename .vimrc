@@ -1,7 +1,5 @@
 " 初期設定 {{{ =================================================================
 
-set nocompatible
-
 let s:iswin = has('win32') || has('win64')
 
 if s:iswin
@@ -378,8 +376,17 @@ if !has('gui_running')
   " 256色モード
   set t_Co=256
   " モードにあわせてカーソル形状変更
-  let &t_SI = "\e]50;CursorShape=1\x7"
-  let &t_EI = "\e]50;CursorShape=0\x7"
+  if exists('$TMUX')
+    let &t_ti = "\ePtmux;\e\e[2 q\e\\"
+    let &t_SI = "\ePtmux;\e\e[6 q\e\\"
+    let &t_EI = "\ePtmux;\e\e[2 q\e\\"
+    let &t_te = "\ePtmux;\e\e[6 q\e\\"
+  elseif &term == 'xterm'
+    let &t_ti = "\e[2 q"
+    let &t_SI = "\e[6 q"
+    let &t_EI = "\e[2 q"
+    let &t_te = "\e[6 q"
+  endif
 endif
 " スプラッシュ(起動時のメッセージ)を表示しない
 "set shortmess& shortmess+=I
@@ -479,6 +486,8 @@ if has('gui_running')
   set guioptions-=m
   " ビジュアル選択を自動的にクリップボードへ
   set guioptions+=a
+  " カーソルを点滅させない
+  set guicursor=a:blinkon0
 
   " フォント
   if s:iswin
@@ -524,9 +533,9 @@ if has('syntax')
 endif
 
 " IMEの状態をカラー表示
-if has('multi_byte_ime')
-  highlight Cursor guifg=NONE guibg=Green
-  highlight CursorIM guifg=NONE guibg=Purple
+if has('multi_byte_ime') || has('xim')
+  highlight Cursor guifg=NONE guibg=White
+  highlight CursorIM guifg=NONE guibg=DarkRed
 endif
 
 " Javaのハイライト
