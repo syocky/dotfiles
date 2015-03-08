@@ -82,7 +82,7 @@ function! s:SIDP()
 endfunction
 
 " <Leader>を , に設定
-let mapleader=","
+let g:mapleader=","
 
 " セッション項目
 set sessionoptions=blank,buffers,curdir,folds,help,localoptions,slash,tabpages
@@ -99,7 +99,6 @@ xnoremap [unite] <Nop>
 nmap <Leader>u [unite]
 xmap <Leader>u [unite]
 
-NeoBundle 'dannyob/quickfixstatus'
 NeoBundleLazy 'dgryski/vim-godef',
               \ {
               \   'autoload' : {
@@ -127,20 +126,18 @@ NeoBundle 'jceb/vim-hier'
 "               \   }
 "               \ }
 NeoBundle 'kana/vim-submode'
+NeoBundle "KazuakiM/vim-qfstatusline"
 NeoBundleLazy 'mattn/excitetranslate-vim',
               \ { 'autoload' : {
               \     'commands' : 'ExciteTranslate',
               \   }
               \ }
 NeoBundle 'mattn/webapi-vim'
-NeoBundleLazy 'mattn/zencoding-vim',
-              \ {
-              \   'autoload' : {
-              \     'insert' : 1,
-              \   }
-              \ }
+NeoBundle 'mattn/emmet-vim'
 NeoBundle 'nanotech/jellybeans.vim'
+NeoBundle 'osyo-manga/shabadou.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
+NeoBundle 'osyo-manga/vim-watchdogs'
 NeoBundleLazy 'Rip-Rip/clang_complete',
               \ {
               \   'autoload' : {
@@ -175,6 +172,9 @@ NeoBundle 'Shougo/vimproc',
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'sjl/gundo.vim'
 NeoBundle 'sgur/unite-qf'
+NeoBundle 'syngan/vim-vimlint', {
+\           'depends' : 'ynkdir/vim-vimlparser',
+\ }
 NeoBundleLazy 'thinca/vim-fontzoom',
               \ {
               \   'gui' : 1,
@@ -361,9 +361,10 @@ set grepprg=internal
 " vimgrepでの検索後、QuickFixウィンドウを開く
 autocmd MyAutoCmd QuickfixCmdPost vimgrep cw
 " 検索で飛んだらそこを真ん中に
-for maptype in ['n', 'N', '*', '#', 'g*', 'g#', 'G']
-  execute 'nmap' maptype maptype . 'zz'
+for s:maptype in ['n', 'N', '*', '#', 'g*', 'g#', 'G']
+  execute 'nmap' s:maptype s:maptype . 'zz'
 endfor
+unlet s:maptype
 " コマンドラインモードでの検索で自動エスケープ
 cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
 cnoremap <expr> ? getcmdtype() == '?' ? '\?' : '?'
@@ -443,7 +444,7 @@ set completeopt=menuone
 " 他のバッファから補完をしない
 set complete=.
 " 改行でコメント自動挿入抑止
-autocmd MyAutoCmd FileType * setlocal formatoptions-=ro
+autocmd MyAutoCmd BufEnter * setlocal formatoptions-=ro
 " 自動折り返しを無効化
 autocmd MyAutoCmd FileType * setlocal textwidth=0
 " 編集中の行に下線を引く
@@ -867,10 +868,6 @@ xnoremap [unite] <Nop>
 nmap <Leader>u [unite]
 xmap <Leader>u [unite]
 
-" quickfixstatus {{{
-
-" }}}
-
 " memolist.vim {{{
 
 let g:memolist_path = $MY_VIM_TMPDIR . '/.memolist'
@@ -965,10 +962,13 @@ let g:lightline = {
       \ 'colorscheme': 'landscape',
       \ 'mode_map': { 'c': 'NORMAL' },
       \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'reanimate' ] ]
+      \   'left' : [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'reanimate' ] ],
+      \   'right': [ [ 'syntaxcheck' ], ]
       \ },
       \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
-      \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
+      \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" },
+      \ 'component_expand': { 'syntaxcheck': 'qfstatusline#Update' },
+      \ 'component_type': { 'syntaxcheck': 'error', },
       \ }
 
 let s:lightline_component_function = {
@@ -1119,6 +1119,10 @@ unlet s:movetab
 
 " }}}
 
+" vim-qfstatusline {{{
+let g:Qfstatusline#UpdateCmd = function('lightline#update')
+" }}}
+
 " excitetranslate-vim {{{
 
 " }}}
@@ -1127,10 +1131,10 @@ unlet s:movetab
 
 " }}}
 
-" zencoding-vim {{{
+" emmet-vim {{{
 
-let g:user_zen_leader_key = '<C-k>'
-let g:user_zen_settings = { 'lang' : 'ja' }
+let g:user_emmet_leader_key = '<C-y>'
+let g:user_emmet_settings = { 'lang' : 'ja' }
 
 " }}}
 
@@ -1410,9 +1414,10 @@ let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 let g:vimshell_force_overwrite_statusline = 0
 " Initialize execute file list.
 let g:vimshell_execute_file_list = {}
-for ext in split('txt,vim,c,h,cpp,xml,java', ',')
-  let g:vimshell_execute_file_list[ext] = 'vim'
+for s:ext in split('txt,vim,c,h,cpp,xml,java', ',')
+  let g:vimshell_execute_file_list[s:ext] = 'vim'
 endfor
+unlet s:ext
 let g:vimshell_execute_file_list['rb'] = 'ruby'
 let g:vimshell_execute_file_list['pl'] = 'perl'
 let g:vimshell_execute_file_list['py'] = 'python'
@@ -1444,68 +1449,44 @@ nnoremap <silent> [vimsh]p :<C-u>VimShellPop<CR>
 
 " }}}
 
-" vim-quickrun {{{
+" vim-quickrun, vim-watchdogs {{{
 
 " g:quickrun_config の初期化
 if !exists("g:quickrun_config")
   let g:quickrun_config={}
 endif
 
-" デフォルト設定
-" 非同期で実行
-" 出力先
-" エラー : quickfix
-" 成功   : buffer
-let g:quickrun_config["_"] = {
-\      "runner/vimproc/updatetime" : 80,
-\      "outputter/buffer/split" : ":rightbelow 8sp",
-\      "outputter/error/error" : "quickfix",
-\      "outputter/error/success" : "buffer",
-\      "outputter" : "error",
-\      "runner" : "vimproc",
+" QuickRun設定
+let g:quickrun_config = {
+\       "_" : {
+\         "runner/vimproc/updatetime" : 80,
+\         "outputter/buffer/split" : ":rightbelow 8sp",
+\         "outputter/error/error" : "quickfix",
+\         "outputter/error/success" : "buffer",
+\         "outputter" : "error",
+\         "runner" : "vimproc",
+\       },
+\       "cpp" : {
+\         "cmdopt" : "-std=gnu++0x -Wall -I ".$MY_BOOST_PATH,
+\       },
+\
+\       "watchdogs_checker/_" : {
+\         "outputter/quickfix/open_cmd" : "",
+\         "hook/qfstatusline_update/enable_exit" : 1,
+\         "hook/qfstatusline_update/priority_exit" : 4,
+\         "runner/vimproc/updatetime" : 40,
+\       },
+\
+\       "cpp/watchdogs_checker" : {
+\         "type" : "watchdogs_checker/g++",
+\       },
+\       "watchdogs_checker/g++" : {
+\         "cmdopt" : "-std=gnu++0x -Wall -I ".$MY_BOOST_PATH,
+\       },
 \ }
 
-" コンパイラ言語用の outputter
-" :QuickRun -outputter
-" プロセスの実行中しているときは、buffer に出力し、
-" プロセスが終了したら、quickfix へ出力を行う
-let my_outputter= quickrun#outputter#multi#new()
-let my_outputter.config.targets = ["buffer", "quickfix"]
-function! my_outputter.init(session)
-  " quickfix を閉じる
-  :cclose
-  " 元の処理を呼び出す
-  call call(quickrun#outputter#multi#new().init, [a:session], self)
-endfunction
-
-function! my_outputter.finish(session)
-  call call(quickrun#outputter#multi#new().finish, [a:session], self)
-  " 出力バッファの削除
-  bwipeout [quickrun
-endfunction
-
-" quickrun に outputter を登録
-call quickrun#register_outputter("my_outputter", my_outputter)
-
-" C++
-" バイナリの出力のみ行う（実行は別）
-let g:quickrun_config["cpp"] = {
-\    "type"    : "cpp",
-\    "command" : "g++",
-\    "cmdopt"    : "-Wall -I ".$MY_BOOST_PATH,
-\    "outputter" : "my_outputter"
-\ }
-
-" シンタックスチェック用コンフィグ
-let g:quickrun_config["CppSyntaxCheck"] = {
-\    "type" : "cpp",
-\    "exec" : "%c %o %s:p ",
-\    "command" : "g++",
-\    "cmdopt" : "-fsyntax-only ",
-\    "outputtter" : "my_outputter"
-\ }
-
-command! CppSyntaxCheck :QuickRun CppSyntaxCheck
+" ファイル保存時のシンタックスチェックを有効にする
+let g:watchdogs_check_BufWritePost_enable = 1
 
 " }}}
 
@@ -1609,7 +1590,7 @@ nnoremap <silent> [unite]pc :<C-u>Unite -auto-preview colorscheme<CR>
 " taglist.vim {{{
 
 " 現在編集中のソースのタグしか表示しない
-let Tlist_Show_One_File = 1
+let g:Tlist_Show_One_File = 1
 nnoremap <Leader>tl :<C-u>TlistToggle<CR>
 
 " }}}
