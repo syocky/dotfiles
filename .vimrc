@@ -1,3 +1,12 @@
+" encoding {{{ =================================================================
+if &encoding !=? 'utf-8'
+  let &termencoding = &encoding
+  set encoding=utf-8
+endif
+
+scriptencoding utf-8
+" }}}
+
 " 初期設定 {{{ =================================================================
 
 let s:iswin = has('win32') || has('win64')
@@ -248,14 +257,6 @@ filetype plugin indent on
 " }}}
 
 " 文字コード {{{ ===============================================================
-
-if &encoding !=? 'utf-8'
-  let &termencoding = &encoding
-  set encoding=utf-8
-endif
-
-" encodingの後にsetすること
-scriptencoding utf-8
 
 if has('guess_encode')
   set fileencodings=ucs-bom,iso-2022-jp,guess,euc-jp,cp932
@@ -512,7 +513,7 @@ if has('gui_running')
 endif
 
 " ハイライトを有効
-syntax enable
+syntax on
 
 " カラースキーム
 "colorscheme torte
