@@ -887,9 +887,7 @@ let g:alpaca_tags#config = {
 \       'vim' : '--languages=+Vim',
 \ }
 let g:alpaca_tags#cache_dir = $MY_VIM_TMPDIR . '/.alpaca_tags'
-" ctagsの自動更新
 autocmd MyAutoCmd BufEnter * AlpacaTagsSet
-autocmd MyAutoCmd BufWritePost * AlpacaTagsUpdate
 
 " }}}
 
