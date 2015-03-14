@@ -988,7 +988,7 @@ let g:lightline = {
       \ 'mode_map': { 'c': 'NORMAL' },
       \ 'active': {
       \   'left' : [ [ 'mode', 'paste' ], [ 'fugitive', 'filename', 'reanimate' ] ],
-      \   'right': [ [ 'syntaxcheck' ], ]
+      \   'right': [ ['syntaxcheck'], ['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype'] ]
       \ },
       \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
       \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" },
@@ -1179,6 +1179,9 @@ let g:reanimate_save_dir = $MY_VIM_TMPDIR . '/.reanimate'
 
 " デフォルトの保存名
 let g:reanimate_default_save_name = "latest"
+
+" デフォルトのカテゴリ名
+let g:reanimate_default_category = "category"
 
 " sessionoptions
 let g:reanimate_sessionoptions = &sessionoptions
