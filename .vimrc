@@ -108,6 +108,7 @@ xnoremap [unite] <Nop>
 nmap <Leader>u [unite]
 xmap <Leader>u [unite]
 
+NeoBundle 'alpaca-tc/alpaca_tags'
 NeoBundleLazy 'dgryski/vim-godef',
               \ {
               \   'autoload' : {
@@ -868,6 +869,29 @@ nnoremap [unite] <Nop>
 xnoremap [unite] <Nop>
 nmap <Leader>u [unite]
 xmap <Leader>u [unite]
+
+" alpaca_tags {{{
+
+let g:alpaca_tags#config = {
+\       '_' : '-R --sort=yes',
+\       'c' : '--languages=+c,c++',
+\       'cpp' : '--languages=+c,c++',
+\       'cs' : '--languages=+c#',
+\       'java' : '--languages=+java',
+\       'js' : '--languages=+JavaScript',
+\       'perl' : '--languages=+Perl',
+\       'php' : '--languages=+PHP',
+\       'python' : '--languages=+Python',
+\       'ruby' : '--languages=+Ruby',
+\       'sh' : '--languages=+Sh',
+\       'vim' : '--languages=+Vim',
+\ }
+g:alpaca_tags#cache_dir = $MY_VIM_TMPDIR . '/.alpaca_tags'
+" ctagsの自動更新
+MyAutoCmd BufEnter * AlpacaTagsSet
+MyAutoCmd BufWritePost * AlpacaTagsUpdate
+
+" }}}
 
 " memolist.vim {{{
 
