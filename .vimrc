@@ -886,10 +886,10 @@ let g:alpaca_tags#config = {
 \       'sh' : '--languages=+Sh',
 \       'vim' : '--languages=+Vim',
 \ }
-g:alpaca_tags#cache_dir = $MY_VIM_TMPDIR . '/.alpaca_tags'
+let g:alpaca_tags#cache_dir = $MY_VIM_TMPDIR . '/.alpaca_tags'
 " ctagsの自動更新
-MyAutoCmd BufEnter * AlpacaTagsSet
-MyAutoCmd BufWritePost * AlpacaTagsUpdate
+autocmd MyAutoCmd BufEnter * AlpacaTagsSet
+autocmd MyAutoCmd BufWritePost * AlpacaTagsUpdate
 
 " }}}
 
