@@ -14,6 +14,7 @@
 !/.vim
 !/.gitignore
 !/.gitconfig
+!/.tern-project
 
 # 上記に"無視したくないファイル"としてリスト化した中から、さらに"無視したいファイル"を指定する。
 /.vim/.tmp
