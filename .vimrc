@@ -109,6 +109,7 @@ nmap <Leader>u [unite]
 xmap <Leader>u [unite]
 
 NeoBundle 'alpaca-tc/alpaca_tags'
+NeoBundle 'Chiel92/vim-autoformat'
 NeoBundleLazy 'dgryski/vim-godef',
               \ {
               \   'autoload' : {
@@ -126,6 +127,11 @@ NeoBundleLazy 'glidenote/memolist.vim',
               \   }
               \ }
 NeoBundle 'h1mesuke/vim-alignta'
+NeoBundleLazy 'heavenshell/vim-jsdoc', {
+\                 'autoload' : {
+\                   'filetypes' : ['javascript']
+\                 }
+\ }
 NeoBundle 'itchyny/landscape.vim'
 NeoBundle 'itchyny/lightline.vim'
 NeoBundle 'jceb/vim-hier'
@@ -135,8 +141,21 @@ NeoBundle 'jceb/vim-hier'
 "               \       'insert' : 1,
 "               \   }
 "               \ }
+NeoBundleLazy 'jelera/vim-javascript-syntax', {
+\                 'autoload' : {
+\                   'filetypes' : ['javascript']
+\                 }
+\ }
 NeoBundle 'kana/vim-submode'
-NeoBundle "KazuakiM/vim-qfstatusline"
+NeoBundle 'KazuakiM/vim-qfstatusline'
+NeoBundle 'marijnh/tern_for_vim', {
+\             'build' : {
+\               'others' : 'npm install'
+\             },
+\             'autoload' : {
+\               'filetypes' : ['javascript']
+\             }
+\ }
 NeoBundleLazy 'mattn/excitetranslate-vim',
               \ { 'autoload' : {
               \     'commands' : 'ExciteTranslate',
@@ -442,9 +461,14 @@ set foldlevel=100
 " diff
 set diffopt=filler,vertical
 " 補完選択時にScratchウィンドウを開かないようにする
-set completeopt=menuone
+set completeopt=menuone,preview
 " 他のバッファから補完をしない
 set complete=.
+" conceal
+if has('conceal')
+  set conceallevel=1
+  set concealcursor=
+endif
 " 改行でコメント自動挿入抑止
 autocmd MyAutoCmd BufEnter * setlocal formatoptions-=ro
 " 自動折り返しを無効化
@@ -1273,7 +1297,7 @@ let g:neocomplete_keyword_patterns['default'] = '\h\w*'
 " オムニ補完
 autocmd MyAutoCmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd MyAutoCmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd MyAutoCmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd MyAutoCmd FileType javascript setlocal omnifunc=tern#Complete
 autocmd MyAutoCmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd MyAutoCmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd MyAutoCmd FileType go setlocal omnifunc=gocomplete#Complete
