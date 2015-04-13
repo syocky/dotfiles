@@ -116,6 +116,12 @@ NeoBundleLazy 'dgryski/vim-godef',
               \     'filetypes' : 'go'
               \   }
               \ }
+NeoBundleLazy 'elzr/vim-json',
+              \ {
+              \   'autoload' : {
+              \     'filetypes' : 'json'
+              \   }
+              \ }
 NeoBundleLazy 'glidenote/memolist.vim',
               \ {
               \   'autoload' : {
@@ -148,7 +154,7 @@ NeoBundleLazy 'jelera/vim-javascript-syntax', {
 \ }
 NeoBundle 'kana/vim-submode'
 NeoBundle 'KazuakiM/vim-qfstatusline'
-NeoBundle 'marijnh/tern_for_vim', {
+NeoBundleLazy 'marijnh/tern_for_vim', {
 \             'build' : {
 \               'others' : 'npm install'
 \             },
@@ -780,6 +786,9 @@ function! s:GetHighlight(hi)
 endfunction
 
 function! s:HighlightSpace()
+  if &filetype ==# 'unite'
+    return
+  endif
   silent! let hi = s:GetHighlight('HighlightSpace')
   if hi =~ 'E411' || hi =~ 'cleared$'
     highlight HighlightSpace cterm=underline ctermfg=red gui=underline guifg=red
@@ -1283,17 +1292,15 @@ let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#data_directory = $MY_VIM_TMPDIR . '/.neocomplete'
 " デリミタ自動補完
 let g:neocomplete#enable_auto_delimiter = 1
-" スマートケース方式の補完を有効
-let g:neocomplete#enable_smart_case = 1
 " 区切り補完を有効
 let g:neocomplete#enable_auto_delimiter = 1
-" completefuncを強制上書き
-let g:neocomplete#force_overwrite_completefunc = 1
+" previewウィンドウを自動で閉じる
+let g:neocomplete#enable_auto_close_preview = 1
 " キーワードパターン定義
-if !exists('g:neocomplete_keyword_patterns')
-  let g:neocomplete_keyword_patterns = {}
+if !exists('g:neocomplete#keyword_patterns')
+  let g:neocomplete#keyword_patterns = {}
 endif
-let g:neocomplete_keyword_patterns['default'] = '\h\w*'
+let g:neocomplete#keyword_patterns._ = '\h\w*'
 " オムニ補完
 autocmd MyAutoCmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd MyAutoCmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -1320,7 +1327,7 @@ let g:neocomplete#force_omni_input_patterns.go = '\h\w*\.\?'
 " 辞書ファイルの定義
 let g:neocomplete#sources#dictionary#dictionaries = {
 \ 'default' : '',
-\ 'vimshell' : $HOME.'/.vimshell/command-history'
+\ 'vimshell' : $MY_VIM_TMPDIR.'/.vimshell/command-history'
 \ }
 " Javaのinclude補完用
 autocmd MyAutoCmd FileType java setlocal include=^import | setlocal includeexpr=substitute(v:fname,'\\.','/','g')
@@ -1378,9 +1385,9 @@ let g:unite_source_file_mru_filename_format = ''
 let g:unite_force_overwrite_statusline = 0
 " デフォルトオプション設定
 call unite#custom#profile('default', 'context', {
+\       'prompt' : '> ',
 \       'ignorecase' : &ignorecase,
-\       'smartcase'  : &smartcase
-\ })
+\       'smartcase'  : &smartcase })
 
 " キーマッピング
 " 現在開いているファイルのディレクトリ下のファイル一覧
