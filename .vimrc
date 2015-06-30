@@ -733,6 +733,10 @@ onoremap [ t[
 nnoremap <C-]> g<C-]>
 nnoremap g<C-]> <C-]>
 
+" VisualModeでの加算/減算
+vnoremap <C-a> <C-a>gv
+vnoremap <C-x> <C-x>gv
+
 " }}}
 
 " Vimスクリプト {{{ ============================================================
