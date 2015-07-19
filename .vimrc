@@ -326,8 +326,8 @@ set nrformats-=octal
 set hidden
 " ヒストリの保存数
 set history=100
-" 日本語の行の連結時には空白を入力しない
-set formatoptions& formatoptions+=mM
+" 日本語の行の連結時には空白を入力しない、コメントリーダーを削除する
+set formatoptions& formatoptions+=mMj
 " Visual blockモードでフリーカーソルを有効にする
 set virtualedit=block
 " カーソルキーで行末／行頭の移動可能に設定
