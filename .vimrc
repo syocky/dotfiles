@@ -69,15 +69,6 @@ if has("vim_starting")
     if &runtimepath !~ '/neobundle.vim'
       execute 'set runtimepath+=' . s:neobundle_dir
     endif
-
-    if $GOPATH != ''
-      " Goのvim設定ファイル読み込み
-      let $GOCODEPATH = globpath($GOPATH, "src/github.com/nsf/gocode/vim")
-        if isdirectory($GOCODEPATH)
-          " gocodeで補完を行う
-          execute 'set runtimepath+=' . $GOCODEPATH
-        endif
-    endif
   endif
 endif
 
@@ -103,18 +94,13 @@ call neobundle#begin(s:plugin_dir)
 
 NeoBundle 'alpaca-tc/alpaca_tags'
 NeoBundle 'Chiel92/vim-autoformat'
-NeoBundleLazy 'dgryski/vim-godef',
-              \ {
-              \   'autoload' : {
-              \     'filetypes' : 'go'
-              \   }
-              \ }
 NeoBundleLazy 'elzr/vim-json',
               \ {
               \   'autoload' : {
               \     'filetypes' : 'json'
               \   }
               \ }
+NeoBundle 'fatih/vim-go'
 NeoBundleLazy 'glidenote/memolist.vim',
               \ {
               \   'autoload' : {
@@ -125,7 +111,6 @@ NeoBundleLazy 'glidenote/memolist.vim',
               \     ]
               \   }
               \ }
-NeoBundle 'h1mesuke/vim-alignta'
 NeoBundleLazy 'heavenshell/vim-jsdoc', {
 \                 'autoload' : {
 \                   'filetypes' : ['javascript']
@@ -145,6 +130,7 @@ NeoBundleLazy 'jelera/vim-javascript-syntax', {
 \                   'filetypes' : ['javascript']
 \                 }
 \ }
+NeoBundle 'junegunn/vim-easy-align'
 NeoBundle 'kana/vim-submode'
 NeoBundle 'KazuakiM/vim-qfstatusline'
 NeoBundleLazy 'marijnh/tern_for_vim', {
@@ -166,12 +152,6 @@ NeoBundle 'nanotech/jellybeans.vim'
 NeoBundle 'osyo-manga/shabadou.vim'
 NeoBundle 'osyo-manga/vim-reanimate'
 NeoBundle 'osyo-manga/vim-watchdogs'
-NeoBundleLazy 'Rip-Rip/clang_complete',
-              \ {
-              \   'autoload' : {
-              \     'filetypes' : ['c', 'cpp']
-              \   }
-              \ }
 NeoBundleFetch 'Shougo/neobundle.vim'
 NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'Shougo/neomru.vim'
@@ -200,9 +180,7 @@ NeoBundle 'Shougo/vimproc',
 NeoBundle 'Shougo/vimshell'
 NeoBundle 'sjl/gundo.vim'
 NeoBundle 'sgur/unite-qf'
-NeoBundle 'syngan/vim-vimlint', {
-\           'depends' : 'ynkdir/vim-vimlparser',
-\ }
+NeoBundle 'syngan/vim-vimlint'
 NeoBundleLazy 'thinca/vim-fontzoom',
               \ {
               \   'gui' : 1,
@@ -242,11 +220,6 @@ NeoBundleLazy 'vim-jp/cpp-vim',
               \     'filetypes' : ['c', 'cpp'],
               \   }
               \ }
-NeoBundleLazy 'vim-jp/vim-go-extra',
-              \ { 'autoload' : {
-              \     'filetypes' : 'go',
-              \   }
-              \ }
 NeoBundleLazy 'vim-scripts/DirDiff.vim',
               \ {
               \   'autoload' : {
@@ -266,6 +239,7 @@ NeoBundleLazy 'vim-scripts/taglist.vim',
               \   }
               \ }
 NeoBundle 'w0ng/vim-hybrid'
+NeoBundle 'ynkdir/vim-vimlparser'
 NeoBundle 'Yggdroot/indentLine'
 NeoBundle 'zhaocai/unite-scriptnames'
 
@@ -280,19 +254,11 @@ NeoBundleCheck
 
 " 文字コード {{{ ===============================================================
 
-if has('guess_encode')
-  set fileencodings=ucs-bom,iso-2022-jp,guess,euc-jp,cp932
-else
-  set fileencodings=ucs-bom,iso-2022-jp,euc-jp,cp932
-endif
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,iso-2022-jp-3,iso-2022-jp,eucjp-ms,euc-jisx0213,euc-jp,sjis,cp932
 
 set fileformat=unix
 set fileformats=unix,dos,mac
-
-" マルチバイト文字が含まれていない場合はencodingの値を使用する
-autocmd MyAutoCmd BufReadPost * if &modifiable && !search('[^\x00-\x7F]', 'cnw')
-\ | setlocal fileencoding=
-\ | endif
 
 " }}}
 
@@ -656,6 +622,10 @@ nnoremap <silent> <space>ww <C-w>w
 nnoremap <silent> <space>wo <C-w>o
 nnoremap <silent> <Space>wx <C-w>x
 nnoremap <silent> <Space>wc <C-w>c
+nnoremap <silent> <Space>w> <C-w>>
+nnoremap <silent> <Space>w< <C-w><
+nnoremap <silent> <Space>w+ <C-w>+
+nnoremap <silent> <Space>w- <C-w>-
 " タブ
 nnoremap <silent> <Space>tn :<C-u>tabnew<CR>
 nnoremap <silent> <Space>tc :<C-u>tabclose<CR>
@@ -925,6 +895,26 @@ if neobundle#is_installed('alpaca_tags')
 endif
 " }}}
 
+" vim-autoformat {{{
+if neobundle#is_installed('vim-autoformat')
+  " 保存時に自動フォーマット
+  autocmd MyAutoCmd FileType javascript autocmd MyAutoCmd BufWritePre <buffer> Autoformat
+endif
+" }}}
+
+" vim-go {{{
+if neobundle#is_installed('vim-go')
+  " ハイライトを有効
+  let g:go_highlight_functions = 1
+  let g:go_highlight_methods = 1
+  let g:go_highlight_structs = 1
+  let g:go_highlight_operators = 1
+  let g:go_highlight_build_constraints = 1
+  " gofmtの代わりにgoimportsを使用
+  let g:go_fmt_command = "goimports"
+endif
+" }}}
+
 " memolist.vim {{{
 if neobundle#is_installed('memolist.vim')
   let g:memolist_path = $MY_VIM_TMPDIR . '/.memolist'
@@ -937,41 +927,6 @@ if neobundle#is_installed('memolist.vim')
   map <Leader>ml :<C-u>MemoList<CR>
   map <Leader>mg :<C-u>MemoGrep<CR>
   nnoremap <silent> <Leader>mug :<C-u>Unite -buffer-name=search grep:<C-r>=substitute(g:memolist_path, ":", "\\\\:", "g")<CR><CR>
-endif
-" }}}
-
-" vim-alignta {{{
-if neobundle#is_installed('vim-alignta')
-  let g:unite_source_alignta_preset_arguments = [
-  \       ["Align at '='", '=>\='],
-  \       ["Align at ':'", '01 :'],
-  \       ["Align at '|'", '|'   ],
-  \       ["Align at ')'", '0 )' ],
-  \       ["Align at ']'", '0 ]' ],
-  \       ["Align at '}'", '}'   ],
-  \ ]
-  let s:comment_leadings = '^\s*\("\|#\|/\*\|//\|<!--\)'
-  let g:unite_source_alignta_preset_options = [
-  \       ["Justify Left",      '<<' ],
-  \       ["Justify Center",    '||' ],
-  \       ["Justify Right",     '>>' ],
-  \       ["Justify None",      '==' ],
-  \       ["Shift Left",        '<-' ],
-  \       ["Shift Right",       '->' ],
-  \       ["Shift Left  [Tab]", '<--'],
-  \       ["Shift Right [Tab]", '-->'],
-  \       ["Margin 0:0",        '0'  ],
-  \       ["Margin 0:1",        '01' ],
-  \       ["Margin 1:0",        '10' ],
-  \       ["Margin 1:1",        '1'  ],
-  \
-  \       'v/' . s:comment_leadings,
-  \       'g/' . s:comment_leadings,
-  \ ]
-  unlet s:comment_leadings
-
-  nnoremap <silent> [unite]a :<C-u>Unite alignta:options<CR>
-  xnoremap <silent> [unite]a :<C-u>Unite alignta:arguments<CR>
 endif
 " }}}
 
@@ -1119,6 +1074,16 @@ if neobundle#is_installed('vim-smartchr')
 endif
 " }}}
 
+" vim-easy-align {{{
+if neobundle#is_installed('vim-easy-align')
+  " Start interactive EasyAlign in visual mode
+  vmap <Enter> <Plug>(EasyAlign)
+
+  " Start interactive EasyAlign for a motion/text object
+  nmap <Leader>ea <Plug>(EasyAlign)
+endif
+" }}}
+
 " vim-submode {{{
 if neobundle#is_installed('vim-submode')
   call submode#enter_with('winsize', 'n', '', '<Space>w>', '<C-w>>')
@@ -1199,27 +1164,6 @@ if neobundle#is_installed('vim-reanimate')
   \       }
   \ }
 
-  " ユーザで hook する event
-  let s:event = {
-  \       "name" : "user_event",
-  \ }
-
-  function! s:event.load_pre_post(...)
-    " 復元前にタブを削除する
-    :tabonly
-  endfunction
-
-  function! s:event.save_pre(...)
-    " 保存前に args を削除する
-    try
-      :execute "argd *"
-    catch
-    endtry
-  endfunction
-
-  call reanimate#hook(s:event)
-  unlet s:event
-
   " 終了時に自動保存
   autocmd MyAutoCmd VimLeavePre * ReanimateSave
   " 開始時に自動復元
@@ -1233,29 +1177,16 @@ if neobundle#is_installed('vim-reanimate')
 endif
 " }}}
 
-" clang_complete {{{
-if neobundle#is_installed('clang_complete')
-  let g:clang_auto_select = 0
-  let g:clang_complete_auto = 0
-  let g:clang_debug = 0
-  let g:clang_use_library = 1
-  let g:clang_library_path = $MY_CLANG_PATH
-  let g:clang_exec = globpath($MY_CLANG_PATH, 'clang.exe')
-  let g:clang_user_options =
-  \ '-fms-extensions -fgnu-runtime '.
-  \ '-include malloc.h '.
-  \ '-std=gnu++0x '
-endif
-" }}}
-
 " neobundle.vim {{{
 
 " プラグインのアップデート
-nnoremap <silent> <Leader>bu :<C-u>Unite neobundle/update -auto-quit<CR>
-" プラグインのインストール／アップデートログ
-nnoremap <silent> <Leader>bla :<C-u>Unite neobundle/log<CR>
+nnoremap <silent> <Leader>bu :<C-u>NeoBundleUpdate<CR>
 " プラグインのアップデートログ
-nnoremap <silent> <Leader>blu :<C-u>NeoBundleUpdatesLog<CR>
+nnoremap <silent> <Leader>bl :<C-u>NeoBundleUpdatesLog<CR>
+" プラグインのアップデート
+nnoremap <silent> [unite]bu :<C-u>Unite neobundle/update -auto-quit<CR>
+" プラグインのインストール／アップデートログ
+nnoremap <silent> [unite]bl :<C-u>Unite neobundle/log<CR>
 
 " }}}
 
@@ -1286,31 +1217,16 @@ if neobundle#is_installed('neocomplete.vim')
   if filereadable($MY_VIMRUNTIME . '/plugin/eclim.vim')
     autocmd MyAutoCmd FileType java setlocal omnifunc=eclim#java#complete#CodeComplete
   endif
-  " オムニ補完のキーワードパターン定義
-  if !exists('g:neocomplete#sources#omni#input_patterns')
-    let g:neocomplete#sources#omni#input_patterns = {}
-  endif
-  if !exists('g:neocomplete#force_omni_input_patterns')
-    let g:neocomplete#force_omni_input_patterns = {}
-  endif
-  let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-  let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-  let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-  let g:neocomplete#force_omni_input_patterns.java = '\%(\h\w*\|)\)\.'
-  let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
-  let g:neocomplete#force_omni_input_patterns.go = '\h\w*\.\?'
   " 辞書ファイルの定義
   let g:neocomplete#sources#dictionary#dictionaries = {
   \ 'default' : '',
   \ 'vimshell' : $MY_VIM_TMPDIR.'/.vimshell/command-history'
   \ }
-  " Javaのinclude補完用
-  autocmd MyAutoCmd FileType java setlocal include=^import | setlocal includeexpr=substitute(v:fname,'\\.','/','g')
 
   " キーマッピング
   " 手動でオムニ補完
-  inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
+  inoremap <expr><C-Space>  pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<C-Space>" :
   \ neocomplete#start_manual_complete()
   function! s:check_back_space()
     let col = col('.') - 1
@@ -1386,10 +1302,6 @@ if neobundle#is_installed('unite.vim')
     " unite終了
     nmap <buffer> <C-j> <Plug>(unite_exit)
     imap <buffer> <C-j> <Plug>(unite_exit)
-    " トグルマーク
-    nmap <buffer> @ <Plug>(unite_toggle_mark_current_candidate)
-    imap <buffer> @ <Plug>(unite_toggle_mark_current_candidate)
-    vmap <buffer> @ <Plug>(unite_toggle_mark_selected_candidates)
     " vimfiler
     nmap <silent><buffer><expr> f unite#do_action('vimfiler')
   endfunction
@@ -1408,9 +1320,6 @@ if neobundle#is_installed('unite-outline')
   \        '*': {
   \          'auto_update': 1,
   \          'auto_update_event': 'write',
-  \        },
-  \        'cpp': {
-  \          'auto_update': 0,
   \        },
   \ }
 endif
@@ -1458,16 +1367,8 @@ if neobundle#is_installed('vimshell')
   let g:vimshell_temporary_directory = $MY_VIM_TMPDIR . '/.vimshell'
   " ユーザ用プロンプト
   let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
+	let g:vimshell_right_prompt = 'vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
   let g:vimshell_force_overwrite_statusline = 0
-  " Initialize execute file list.
-  let g:vimshell_execute_file_list = {}
-  for s:ext in split('txt,vim,c,h,cpp,xml,java', ',')
-    let g:vimshell_execute_file_list[s:ext] = 'vim'
-  endfor
-  unlet s:ext
-  let g:vimshell_execute_file_list['rb'] = 'ruby'
-  let g:vimshell_execute_file_list['pl'] = 'perl'
-  let g:vimshell_execute_file_list['py'] = 'python'
   " キーマッピング
   nnoremap <silent> [vimsh]h :<C-u>VimShell<CR>
   nnoremap <silent> [vimsh]c :<C-u>VimShellCreate<CR>
@@ -1493,9 +1394,6 @@ if neobundle#is_installed('vim-quickrun') && neobundle#is_installed('vim-watchdo
   \         "outputter" : "error",
   \         "runner" : "vimproc",
   \       },
-  \       "cpp" : {
-  \         "cmdopt" : "-std=gnu++0x -Wall -I ".$MY_BOOST_PATH,
-  \       },
   \
   \       "watchdogs_checker/_" : {
   \         "outputter/quickfix/open_cmd" : "",
@@ -1504,13 +1402,8 @@ if neobundle#is_installed('vim-quickrun') && neobundle#is_installed('vim-watchdo
   \         "runner/vimproc/updatetime" : 40,
   \       },
   \
-  \       "cpp/watchdogs_checker" : {
-  \         "type" : "watchdogs_checker/g++",
-  \       },
-  \       "watchdogs_checker/g++" : {
-  \         "cmdopt" : "-std=gnu++0x -Wall -I ".$MY_BOOST_PATH,
-  \       },
   \ }
+  call watchdogs#setup(g:quickrun_config)
 
   " ファイル保存時のシンタックスチェックを有効にする
   let g:watchdogs_check_BufWritePost_enable = 1
@@ -1581,23 +1474,12 @@ endif
 if neobundle#is_installed('unite-tag')
   nnoremap <silent> [unite]tt  :<C-u>UniteWithCursorWord -buffer-name=tag -immediately tag<CR>
   nnoremap <silent> [unite]ti  :<C-u>UniteWithCursorWord -buffer-name=tag tag/include<CR>
-  "autocmd MyAutoCmd BufEnter *
-  "  \  if empty(&buftype) |
-  "  \    nnoremap <buffer> <C-]> :<C-u>UniteWithCursorWord -immediately tag<CR> |
-  "  \  endif
 endif
 " }}}
 
 " unite-colorscheme {{{
 if neobundle#is_installed('unite-colorscheme')
   nnoremap <silent> [unite]pc :<C-u>Unite -auto-preview colorscheme<CR>
-endif
-" }}}
-
-" vim-go-extra {{{
-if neobundle#is_installed('vim-go-extra')
-  " 保存時に自動フォーマット
-  autocmd MyAutoCmd FileType go autocmd MyAutoCmd BufWritePre <buffer> Fmt
 endif
 " }}}
 
