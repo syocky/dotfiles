@@ -1130,7 +1130,11 @@ endif
 " emmet-vim {{{
 if neobundle#is_installed('emmet-vim')
   let g:user_emmet_leader_key = '<C-y>'
-  let g:user_emmet_settings = { 'lang' : 'ja' }
+  let g:user_emmet_settings = {
+  \     'variables' : {
+  \       'lang' : 'ja',
+  \     }
+  \ }
 endif
 " }}}
 
@@ -1400,6 +1404,10 @@ if neobundle#is_installed('vim-quickrun') && neobundle#is_installed('vim-watchdo
   \         "hook/qfstatusline_update/enable_exit" : 1,
   \         "hook/qfstatusline_update/priority_exit" : 4,
   \         "runner/vimproc/updatetime" : 40,
+  \       },
+  \
+  \       "javascript/watchdogs_checker" : {
+  \         "type" : "eslint"
   \       },
   \
   \ }
